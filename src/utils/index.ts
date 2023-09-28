@@ -1,2 +1,2 @@
-export * from './common.js';
+export * from './extrinsic.js';
 export * from './xcm.js';

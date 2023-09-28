@@ -5,8 +5,7 @@ import { EventEmitter } from 'node:events';
 import { KeyringPair } from '@polkadot/keyring/types';
 import chalk from 'chalk';
 
-import { txCallback } from '../utils/common.js';
-import { buildXcmTransactCall } from '../utils/xcm.js';
+import { txCallback, buildXcmTransactCall} from '../utils/index.js';
 import { Asset } from '../types.js';
 import { Chain } from '../chains.js';
 

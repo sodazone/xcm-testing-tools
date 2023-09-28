@@ -8,8 +8,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 import chalk from 'chalk';
 
-import { txCallback } from '../utils/common.js';
-import { deriveSovereignAccount } from '../utils/xcm.js';
+import { txCallback, deriveSovereignAccount } from '../utils/index.js';
 import { Chains } from '../chains.js';
 
 export async function fundRelaySovereignAccounts(chains: Chains, account: KeyringPair, eventEmitter: EventEmitter) {
