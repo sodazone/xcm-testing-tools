@@ -18,7 +18,7 @@ import {
 } from './calls/index.js';
 
 import { Chains } from './chains/index.js';
-import { Executor } from './executor.js';
+import { Executor } from './executor/index.js';
 
 import config from './config.json' assert { type: 'json' };
 
