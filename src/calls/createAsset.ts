@@ -7,7 +7,7 @@ import chalk from 'chalk';
 
 import { txCallback, buildXcmTransactCall} from '../utils/index.js';
 import { Asset } from '../types.js';
-import { Chain } from '../chains.js';
+import { Chain } from '../chains/index.js';
 
 export const forceCreateAsset = async (
   parachain: Chain,

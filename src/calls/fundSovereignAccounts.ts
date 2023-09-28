@@ -9,7 +9,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import chalk from 'chalk';
 
 import { txCallback, deriveSovereignAccount } from '../utils/index.js';
-import { Chains } from '../chains.js';
+import { Chains } from '../chains/index.js';
 
 export async function fundRelaySovereignAccounts(chains: Chains, account: KeyringPair, eventEmitter: EventEmitter) {
   const relay = chains.relaychain;

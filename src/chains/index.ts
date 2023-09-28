@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import chalk from 'chalk';
 
-import { NetworkConfig } from './types.js';
+import { NetworkConfig } from '../types.js';
 
 const DEFAULT_TOKEN_DECIMALS = 12;
 const DEFAULT_SS58_PREFIX = 42;

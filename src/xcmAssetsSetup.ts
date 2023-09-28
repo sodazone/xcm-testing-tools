@@ -17,7 +17,7 @@ import {
   fundSiblingSovereignAccounts
 } from './calls/index.js';
 
-import { Chains } from './chains.js';
+import { Chains } from './chains/index.js';
 import { Executor } from './executor.js';
 
 import config from './config.json' assert { type: 'json' };
