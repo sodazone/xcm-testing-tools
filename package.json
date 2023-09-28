@@ -1,0 +1,23 @@
+{
+  "name": "zombienet-xcm-setup",
+  "packageManager": "yarn@3.6.3",
+  "type": "module",
+  "scripts": {
+    "build": "substrate-exec-rimraf ./lib && substrate-exec-tsc",
+    "lint": "eslint --cache --fix --ext .ts src/"
+  },
+  "resolutions": {
+    "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "@substrate/dev": "^0.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "chalk": "4.1.2",
+    "eslint": "^8.50.0",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "@substrate/asset-transfer-api": "^0.1.0"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "networks": [
+    {
+      "id": 0,
+      "ws": "ws://127.0.0.1:9900"
+    },
+    {
+      "id": 1000,
+      "ws": "ws://127.0.0.1:9910"
+    },
+    {
+      "id": 2000,
+      "ws": "ws://127.0.0.1:9920"
+    }
+  ],
+  "assets": [
+    {
+      "id": 1984,
+      "name": "rUSD",
+      "symbol": "RUSD",
+      "decimals": 12,
+      "location": 1000,
+      "minBalance": 1000,
+      "isSufficient": true,
+      "assetMultiLocation": {
+        "parents": 1,
+        "interior": {
+          "X3": [
+            { "Parachain": 1000 },
+            { "PalletInstance": 50 },
+            { "GeneralIndex": 1984 }
+          ]
+        }
+      }
+    }
+  ],
+  "xcAssets": [
+    {
+      "id": 19841984,
+      "name": "xcrUSD",
+      "symbol": "xcRUSD",
+      "decimals": 12,
+      "location": 2000,
+      "minBalance": 1000,
+      "isSufficient": true,
+      "assetMultiLocation": {
+        "parents": 1,
+        "interior": {
+          "X3": [
+            { "Parachain": 1000 },
+            { "PalletInstance": 50 },
+            { "GeneralIndex": 1984 }
+          ]
+        }
+      }
+    }
+  ]
+}
