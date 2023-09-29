@@ -8,6 +8,7 @@
     "lint": "eslint --cache --fix --ext .ts src/"
   },
   "bin": {
+    "transfer": "./dist/scripts/transfer.js",
     "xcm-setup": "./dist/scripts/xcmAssetsSetup.js"
   },
   "resolutions": {

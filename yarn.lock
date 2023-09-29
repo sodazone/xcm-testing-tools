@@ -5639,6 +5639,7 @@ __metadata:
     shx: ^0.3.4
     ts-node: ^10.9.1
   bin:
+    transfer: ./dist/scripts/transfer.js
     xcm-setup: ./dist/scripts/xcmAssetsSetup.js
   languageName: unknown
   linkType: soft
