@@ -18,7 +18,7 @@ corepack enable
 ```shell
 yarn install
 ```
-4. Build Ocelloids libraries:
+4. Build:
 
 ```shell
 yarn build
