@@ -1,5 +1,3 @@
-// import '@polkadot/api-augment';
-
 import { EventEmitter } from 'node:events';
 
 import { KeyringPair } from '@polkadot/keyring/types';

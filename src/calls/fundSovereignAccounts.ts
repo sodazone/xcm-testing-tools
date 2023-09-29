@@ -1,5 +1,3 @@
-// import '@polkadot/api-augment';
-
 import { EventEmitter } from 'node:events';
 
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
