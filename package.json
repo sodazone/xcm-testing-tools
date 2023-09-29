@@ -3,8 +3,12 @@
   "packageManager": "yarn@3.6.3",
   "type": "module",
   "scripts": {
-    "build": "substrate-exec-rimraf ./lib && substrate-exec-tsc",
+    "build": "substrate-exec-rimraf ./dist && substrate-exec-tsc && yarn sed:shebang",
+    "sed:shebang": "shx sed -i \"s/\\/env ts-node/\\/env node/g\" ./dist/scripts/*.js > /dev/null",
     "lint": "eslint --cache --fix --ext .ts src/"
+  },
+  "bin": {
+    "xcm-setup": "./dist/scripts/xcmAssetsSetup.js"
   },
   "resolutions": {
     "typescript": "5.0.4"
@@ -15,6 +19,7 @@
     "@typescript-eslint/parser": "^6.7.3",
     "chalk": "4.1.2",
     "eslint": "^8.50.0",
+    "shx": "^0.3.4",
     "ts-node": "^10.9.1"
   },
   "dependencies": {

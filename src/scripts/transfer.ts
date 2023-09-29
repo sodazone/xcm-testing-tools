@@ -1,3 +1,5 @@
+#!/usr/bin/env ts-node
+
 import { EventEmitter } from 'node:events';
 
 import chalk from 'chalk';

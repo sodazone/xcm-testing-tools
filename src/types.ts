@@ -15,7 +15,7 @@ export interface XCMMultiLocation {
 	interior: XCMRegistryInteriorMultiLocation;
 }
 
-export interface Asset {
+export interface AssetConfig {
   id: number;
     name: string;
     symbol: string;
@@ -23,10 +23,16 @@ export interface Asset {
     decimals: number;
     minBalance: number;
     isSufficient: boolean;
-    assetMultiLocation: XCMMultiLocation
+    assetMultiLocation: XCMMultiLocation;
 }
 
 export interface NetworkConfig {
   id: number;
   ws: string;
+}
+
+export interface Config {
+  networks: NetworkConfig[];
+  assets: AssetConfig[];
+  xcAssets: AssetConfig[];
 }

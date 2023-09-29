@@ -1,4 +1,4 @@
-import '@polkadot/api-augment';
+// import '@polkadot/api-augment';
 
 import { EventEmitter } from 'node:events';
 
@@ -6,7 +6,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import chalk from 'chalk';
 
 import { txCallback, buildXcmTransactCall } from '../utils/index.js';
-import { Asset } from '../types.js';
+import { AssetConfig } from '../types.js';
 import { Chain } from '../chains/index.js';
 
 /**
@@ -14,7 +14,7 @@ import { Chain } from '../chains/index.js';
  * @param api ApiPromise of the network where XC asset should be created
  * @param owner The keyring pair of the owner account
  */
-export const createXcAsset = async (chain: Chain, owner: KeyringPair, asset: Asset, eventEmitter: EventEmitter) => {
+export const createXcAsset = async (chain: Chain, owner: KeyringPair, asset: AssetConfig, eventEmitter: EventEmitter) => {
   const { api } = chain;
   const txs = [
     api.tx.assets.create(asset.id, owner.address, asset.minBalance),
@@ -40,7 +40,7 @@ export const forceRegisterXcAsset = async (
   parachain: Chain,
   relaychain: Chain,
   owner: KeyringPair,
-  asset: Asset,
+  asset: AssetConfig,
   eventEmitter: EventEmitter
 ) => {
   const forceRegister = parachain.api.tx.assetRegistry.registerReserveAsset(asset.id, asset.assetMultiLocation);

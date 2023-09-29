@@ -1,4 +1,4 @@
-import '@polkadot/api-augment';
+// import '@polkadot/api-augment';
 
 import { EventEmitter } from 'node:events';
 

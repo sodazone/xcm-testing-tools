@@ -1,4 +1,4 @@
-import '@polkadot/api-augment';
+// import '@polkadot/api-augment';
 
 import { EventEmitter } from 'node:events';
 
@@ -6,14 +6,14 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import chalk from 'chalk';
 
 import { txCallback, buildXcmTransactCall} from '../utils/index.js';
-import { Asset } from '../types.js';
+import { AssetConfig } from '../types.js';
 import { Chain } from '../chains/index.js';
 
 export const forceCreateAsset = async (
   parachain: Chain,
   relaychain: Chain,
   owner: KeyringPair,
-  asset: Asset,
+  asset: AssetConfig,
   eventEmitter: EventEmitter
 ) => {
   const forceCreate = parachain.api.tx.assets.forceCreate(asset.id, owner.address, asset.isSufficient, asset.minBalance);
@@ -41,7 +41,7 @@ export const forceCreateAsset = async (
   await relaychain.api.tx.sudo.sudo(xcmCall).signAndSend(owner, { nonce }, txCallback(relaychain.api, forceCreateAsset.name, eventEmitter));
 };
 
-export const mintAsset = async (chain: Chain, owner: KeyringPair, asset: Asset, eventEmitter: EventEmitter) => {
+export const mintAsset = async (chain: Chain, owner: KeyringPair, asset: AssetConfig, eventEmitter: EventEmitter) => {
   const txs = [
     chain.api.tx.assets.setMetadata(
       asset.id,

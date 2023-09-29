@@ -1,4 +1,4 @@
-import '@polkadot/api-augment';
+// import '@polkadot/api-augment';
 
 import { ApiPromise } from '@polkadot/api';
 import { stringToU8a, bnToU8a } from '@polkadot/util';
