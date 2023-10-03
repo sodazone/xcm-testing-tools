@@ -3,6 +3,10 @@ alias z := zombienet
 default:
   @just --list
 
+# Builds the project
+build:
+  yarn build > /dev/null
+
 # Downloads zombienet binaries
 download:
   ./scripts/download.sh
@@ -12,9 +16,9 @@ zombienet config='./conf/zn-asset-hub-astar.toml':
   ./bin/zombienet -p native spawn {{config}}
 
 # Register XCM assets
-assets *ARGS:
-  ts-node-esm src/cli/assets.ts {{ARGS}}
+assets *ARGS: build
+  yarn assets {{ARGS}}
 
 # Transfer assets
-transfer *ARGS:
-  ts-node-esm src/cli/transfer.ts {{ARGS}}
+transfer *ARGS: build
+  yarn transfer {{ARGS}}
