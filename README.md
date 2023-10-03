@@ -45,7 +45,7 @@ NOTES:
 There is a sample Zombienet configuration file found in `<root>/zombienet.toml`. You can spin up Zombienet with this command from project root:
 
 ```shell
-./bin/<zombienet_binary> -p native spawn ./zombienet.toml | tee zombienet.log
+./bin/zombinet -p native spawn ./zombienet.toml
 ```
 
 To set up all the assets and sovereign accounts necessary to make an XCM asset transfer, run the following command:
