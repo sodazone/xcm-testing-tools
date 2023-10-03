@@ -12,9 +12,10 @@ import {
   forceCreateAsset,
   mintAsset,
   createXcAsset,
-  forceRegisterXcAsset,
   fundRelaySovereignAccounts,
-  fundSiblingSovereignAccounts
+  fundSiblingSovereignAccounts,
+  forceRegisterAssetLocation,
+  forceRegisterReserveAsset
 } from '../calls/index.js';
 
 import log from './log.js';
@@ -63,7 +64,11 @@ async function main({ configPath, seed }: CliArgs) {
     if (chain.api.tx.assetRegistry) {
       executor
         .enqueue(createXcAsset, [chain, signer, xcAsset])
-        .enqueue(forceRegisterXcAsset, [chain, chains.relaychain, signer, xcAsset]);
+        .enqueue(forceRegisterReserveAsset, [chain, chains.relaychain, signer, xcAsset]);
+    } else if (chain.api.tx.xcAssetConfig) {
+      executor
+        .enqueue(createXcAsset, [chain, signer, xcAsset])
+        .enqueue(forceRegisterAssetLocation, [chain, chains.relaychain, signer, xcAsset]);
     } else {
       throw new Error('XC asset registration pallet not supported');
     }

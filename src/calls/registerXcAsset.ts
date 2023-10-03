@@ -1,7 +1,8 @@
 import { EventEmitter } from 'node:events';
 
 import { KeyringPair } from '@polkadot/keyring/types';
-import chalk from 'chalk';
+import type { SubmittableExtrinsic } from '@polkadot/api/types';
+import type { ISubmittableResult } from '@polkadot/types/types';
 
 import { txCallback, buildXcmTransactCall } from '../utils/index.js';
 import { AssetConfig } from '../types.js';
@@ -27,77 +28,63 @@ export const createXcAsset = async (chain: Chain, owner: KeyringPair, asset: Ass
 
   const nonce = await chain.incrementGetNonce(owner.address);
   console.log(
-    chalk.white(
-      `Sending batch call to create asset [${asset.id} - ${asset.name}] and set metadata on chain ${asset.location}. Nonce: ${nonce}`
-    )
+    `Sending batch call to create asset [${asset.id} - ${asset.name}] and set metadata on chain ${asset.location}. Nonce: ${nonce}`
   );
   await batch.signAndSend(owner, { nonce }, txCallback(api, createXcAsset.name, eventEmitter));
 };
 
-export async function x(
+async function sudoXcmCall(
+  forceCall: SubmittableExtrinsic<'promise', ISubmittableResult>,
+  parachain: Chain,
+  relaychain: Chain,
+  owner: KeyringPair,
+  eventName: string,
+  eventEmitter: EventEmitter
+) {
+  const forceRegisterCall = parachain.api.createType('Call', forceCall);
+
+  const xcmDest = {
+    V3: {
+      parents: 0,
+      interior: {
+        X1: {
+          parachain: parachain.id,
+        },
+      },
+    },
+  };
+
+  const xcmCall = buildXcmTransactCall(relaychain.api, 'Superuser', forceRegisterCall.toHex(), xcmDest);
+  const nonce = await relaychain.incrementGetNonce(owner.address);
+
+  console.log(`Sending Sudo XCM message from relay chain to execute forceRegister call on . Nonce: ${nonce}`);
+
+  await relaychain.api.tx.sudo.sudo(xcmCall)
+    .signAndSend(owner, { nonce }, txCallback(relaychain.api, eventName, eventEmitter));
+}
+
+export async function forceRegisterAssetLocation(
   parachain: Chain,
   relaychain: Chain,
   owner: KeyringPair,
   asset: AssetConfig,
   eventEmitter: EventEmitter
 ) {
-  const forceRegister = parachain.api.tx.xcAssetConfig.registerAssetLocation({ V3: {
-    ...asset.assetMultiLocation
-  }}, asset.id);
-  const forceRegisterCall = parachain.api.createType('Call', {
-    callIndex: forceRegister.callIndex,
-    args: forceRegister.args,
-  });
+  const forceRegister = parachain.api.tx.xcAssetConfig.registerAssetLocation({
+    V3: { ...asset.assetMultiLocation }
+  }, asset.id);
 
-  const xcmDest = {
-    V3: {
-      parents: 0,
-      interior: {
-        X1: {
-          parachain: asset.location,
-        },
-      },
-    },
-  };
-
-  const xcmCall = buildXcmTransactCall(relaychain.api, 'Superuser', forceRegisterCall.toHex(), xcmDest);
-
-  const nonce = await relaychain.incrementGetNonce(owner.address);
-  console.log(chalk.white(`Sending Sudo XCM message from relay chain to execute forceRegister call on . Nonce: ${nonce}`));
-
-  await relaychain.api.tx.sudo.sudo(xcmCall)
-    .signAndSend(owner, { nonce }, txCallback(relaychain.api, x.name, eventEmitter));
+  await sudoXcmCall(forceRegister, parachain, relaychain, owner, 'forceRegisterAssetLocation', eventEmitter);
 }
 
-export const forceRegisterXcAsset = async (
+export async function forceRegisterReserveAsset(
   parachain: Chain,
   relaychain: Chain,
   owner: KeyringPair,
   asset: AssetConfig,
   eventEmitter: EventEmitter
-) => {
+) {
   const forceRegister = parachain.api.tx.assetRegistry.registerReserveAsset(asset.id, asset.assetMultiLocation);
-  const forceRegisterCall = parachain.api.createType('Call', {
-    callIndex: forceRegister.callIndex,
-    args: forceRegister.args,
-  });
 
-  const xcmDest = {
-    V3: {
-      parents: 0,
-      interior: {
-        X1: {
-          parachain: asset.location,
-        },
-      },
-    },
-  };
-
-  const xcmCall = buildXcmTransactCall(relaychain.api, 'Superuser', forceRegisterCall.toHex(), xcmDest);
-
-  const nonce = await relaychain.incrementGetNonce(owner.address);
-  console.log(chalk.white(`Sending Sudo XCM message from relay chain to execute forceRegister call on Trappist. Nonce: ${nonce}`));
-
-  await relaychain.api.tx.sudo.sudo(xcmCall)
-    .signAndSend(owner, { nonce }, txCallback(relaychain.api, forceRegisterXcAsset.name, eventEmitter));
-};
+  await sudoXcmCall(forceRegister, parachain, relaychain, owner, 'forceRegisterReserveAsset', eventEmitter);
+}
