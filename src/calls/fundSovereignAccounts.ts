@@ -42,7 +42,7 @@ export async function fundSiblingSovereignAccounts(chains: Chains, account: Keyr
       if (sibling.id !== parachain.id) {
         const key = deriveSovereignAccount(sibling.id, 'sibl');
         const address = encodeAddress(key, sibling.ss58Prefix);
-        const amount = parachain.tokenDecimals ? 2 * (10 ** parachain.tokenDecimals) : 2 * (10 ** 12);
+        const amount = BigInt(parachain.tokenDecimals ? 2 * (10 ** parachain.tokenDecimals) : 2 * (10 ** 12));
 
         const nonce = await parachain.incrementGetNonce(account.address);
         console.log(

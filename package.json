@@ -1,18 +1,15 @@
 {
-  "name": "zombienet-xcm-setup",
+  "name": "xcm-test-tools",
   "packageManager": "yarn@3.6.3",
   "type": "module",
   "scripts": {
     "build": "substrate-exec-rimraf ./dist && substrate-exec-tsc && yarn sed:shebang",
-    "sed:shebang": "shx sed -i \"s/\\/env ts-node/\\/env node/g\" ./dist/scripts/*.js > /dev/null",
+    "sed:shebang": "shx sed -i \"s/\\/env ts-node/\\/env node/g\" ./dist/cli/*.js > /dev/null",
     "lint": "eslint --cache --fix --ext .ts src/"
   },
   "bin": {
-    "transfer": "./dist/scripts/transfer.js",
-    "xcm-setup": "./dist/scripts/xcmAssetsSetup.js"
-  },
-  "resolutions": {
-    "typescript": "5.0.4"
+    "assets": "./dist/cli/assets.js",
+    "transfer": "./dist/cli/transfer.js"
   },
   "devDependencies": {
     "@substrate/dev": "^0.7.0",
@@ -24,6 +21,7 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
-    "@substrate/asset-transfer-api": "^0.1.0"
+    "@substrate/asset-transfer-api": "^0.1.0",
+    "commander": "^11.0.0"
   }
 }

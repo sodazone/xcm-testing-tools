@@ -22,4 +22,4 @@ test -f astar-collator || {
 }
 
 chmod 755 *
-ls .
+ls -lh .

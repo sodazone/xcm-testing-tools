@@ -9,6 +9,7 @@ default_args = [ "-lparachain=debug" ]
   [[relaychain.nodes]]
   name = "alice"
   validator = true
+  ws_port = 9900
 
   [[relaychain.nodes]]
   name = "bob"

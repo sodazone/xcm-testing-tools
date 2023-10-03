@@ -1,15 +1,12 @@
 #!/usr/bin/env ts-node
 
 import { EventEmitter } from 'node:events';
-import path from 'node:path';
 import { readFileSync } from 'node:fs';
 
-import yargs from 'yargs/yargs';
-import { hideBin } from 'yargs/helpers';
+import { program } from 'commander';
 
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-import chalk from 'chalk';
 
 import {
   forceCreateAsset,
@@ -20,13 +17,19 @@ import {
   fundSiblingSovereignAccounts
 } from '../calls/index.js';
 
+import log from './log.js';
 import { Chains } from '../chains/index.js';
 import { Executor } from '../executor/index.js';
 import { Config } from '../types.js';
 
+type CliArgs = {
+  configPath: string
+  seed: string
+}
+
 const eventEmitter = new EventEmitter();
 
-async function main({ configPath, seed }: {configPath: string, seed: string}) {
+async function main({ configPath, seed }: CliArgs) {
   // Parse config
   const c = readFileSync(configPath).toString();
   const config: Config = JSON.parse(c);
@@ -74,48 +77,30 @@ async function main({ configPath, seed }: {configPath: string, seed: string}) {
   executor.execute();
 }
 
-const argv = yargs(hideBin(process.argv))
-  .usage('Usage: $0 [options]')
-  .example(
-    '$0 -p ./config.json -s //Alice',
-    'Sets up assets and sovereign accounts on networks defined in the configuration file using Alice account'
-  )
-  .option('p', {
-    type: 'string',
-    alias: 'path',
-    describe: 'The path to the configuration file.',
-    coerce: p => path.resolve(p),
-    demandOption: true,
-    requiresArg: true
-  })
-  .option('s', {
-    type: 'string',
-    alias: 'seed',
-    describe: 'The account seed to use for making transactions.',
-    default: '//Alice',
-  })
-  .help('h')
-  .alias('h', 'help')
-  .scriptName('xcm-setup')
-  .argv as any;
+program.name('assets')
+  .description('Setup XCM assets')
+  .version('0.0.1')
+  .option('-s, --seed <seed>', 'private seed', '//Alice')
+  .argument('<configPath>', 'assets configuration file');
+
+program.parse();
 
 main({
-  configPath: argv.path,
-  seed: argv.seed
-})
-  .catch(console.error)
+  ...program.opts(),
+  configPath: program.args[0]
+}).catch(console.error)
   .finally(async () => {
     eventEmitter.on('done', (errorMessage: string) => {
       if (errorMessage) {
-        console.log(chalk.red(`Error while executing: ${errorMessage}.`));
+        log.error(`Error while executing: ${errorMessage}.`);
       }
-      console.log(chalk.yellow('Set up finished. Exiting...'));
-      process.exit();
+      log.info('Set up finished. Exiting...');
+      process.exit(0);
     });
 
     eventEmitter.on('error', (errorMessage: string) => {
-      console.log(chalk.red(`Error while executing: ${errorMessage}. Aborting subsequent transactions execution.`));
-      process.exit();
+      log.error(`Error while executing: ${errorMessage}. Aborting subsequent transactions execution.`);
+      process.exit(1);
     });
   });
 
