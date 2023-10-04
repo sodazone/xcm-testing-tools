@@ -121,4 +121,4 @@ yarn transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5HGjWAeFDfFCWPsjFQdVV2Ms
 
 Feel free to reach out if you encounter any issues or have questions related to this setup.
 
-Happy testing!
+🌟 Happy testing!
