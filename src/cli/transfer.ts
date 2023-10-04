@@ -1,7 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { EventEmitter } from 'node:events';
-
+import { inspect } from 'node:util';
 import { program } from 'commander';
 
 import { Keyring } from '@polkadot/keyring';
@@ -9,7 +8,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { AssetTransferApi, constructApiPromise, TxResult } from '@substrate/asset-transfer-api';
 
 import log from './log.js';
-import { txCallback } from '../utils/index.js';
+import { txStatusCallback } from '../utils/index.js';
 
 type CliArgs = {
   url: string,
@@ -20,8 +19,6 @@ type CliArgs = {
   amounts: string[],
   xcmVersion?: number
 }
-
-const eventEmitter = new EventEmitter();
 
 const main = async ({
   url,
@@ -55,13 +52,23 @@ const main = async ({
       }
     );
 
-    log.info(`The following call data that is returned:\n${JSON.stringify(submittableTx, null, 4)}`);
+    log.info(
+      'The following call data that is returned:',
+      inspect(submittableTx)
+    );
   } catch (e) {
     console.error(e);
     throw Error(e as string);
   }
 
-  await submittableTx.tx.signAndSend(signer, txCallback(api, 'txFinalized', eventEmitter));
+  await submittableTx.tx.signAndSend(signer, txStatusCallback(api, result => {
+    if (result.hasErrors) {
+      process.exit(1);
+    } else {
+      log.ok('All OK!');
+      process.exit(0);
+    }
+  }));
 };
 
 program.name('transfer')
@@ -85,17 +92,4 @@ program.parse();
 main({
   ...program.opts(),
   url: program.args[0]
-}).finally(() => {
-  eventEmitter.on('txFinalized', (errorMessage?: string, polkadotXcmError?: string) => {
-    if (polkadotXcmError) {
-      log.error('Error in XCM execution:', polkadotXcmError);
-    }
-    if (errorMessage) {
-      log.error('Error in extrinsic:', errorMessage);
-    } else {
-      log.ok('Extrinsic success');
-    }
-    log.info('\nTransfer finalized, exiting script...');
-    process.exit();
-  });
 });

@@ -1,11 +1,11 @@
 import '@polkadot/api-augment';
 
-import { EventEmitter } from 'node:events';
-
 import { ApiPromise } from '@polkadot/api';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { Outcome } from '@polkadot/types/interfaces/xcm';
-import chalk from 'chalk';
+
+import log from '../cli/log.js';
+import { AckCallback, TxResult } from '../types.js';
 
 function getExtrinsicError(api: ApiPromise, result: ISubmittableResult) {
   let errorMessage: string | undefined;
@@ -19,7 +19,9 @@ function getExtrinsicError(api: ApiPromise, result: ISubmittableResult) {
       errorMessage = errorMessage ? errorMessage + moduleError : moduleError;
     } else {
       // Other, CannotLookup, BadOrigin, no extra info
-      errorMessage = errorMessage ? errorMessage + dispatchError.toString() : dispatchError.toString();
+      errorMessage = errorMessage
+        ? errorMessage + dispatchError.toString()
+        : dispatchError.toString();
     }
   }
   if (internalError) {
@@ -49,26 +51,33 @@ function extractPolkadotXcmError(api: ApiPromise, { events }: ISubmittableResult
     });
 }
 
-export const txCallback = (api: ApiPromise, name = '', eventEmitter: EventEmitter) => {
-  return (result: ISubmittableResult) => {
+export const txStatusCallback = (api: ApiPromise, ack: AckCallback) => {
+  return async (result: ISubmittableResult) => {
     const { status } = result;
 
-    console.log(chalk.cyan(`[${name}] Transaction status: ${status}`));
+    log.info('Transaction status:', status);
 
     if (status.isFinalized) {
-      const extrinsicError = getExtrinsicError(api, result);
-      let polkadotXcmError: string | undefined;
-      // pallet_xcm errors are not emitted as module errors so we need to decode the events to extract errors
+      const xterr = getExtrinsicError(api, result);
+      const txRes = new TxResult(xterr);
+
+      if (xterr) {
+        log.error('Extrinsic error:', xterr);
+      }
+
+      // pallet_xcm errors are not emitted as module errors
+      // so we need to decode the events to extract errors
       if (api.events.polkadotXcm) {
-        const es = extractPolkadotXcmError(api, result);
-        for (const e of es) {
-          if (e) {
-            polkadotXcmError = polkadotXcmError ? polkadotXcmError + `\nPolkadotXcm.Attempted Error: ${e}` : e;
+        const errors = extractPolkadotXcmError(api, result);
+        for (const error of errors) {
+          if (error) {
+            txRes.addXcmError(error);
+            log.error('XCM execution error:', error);
           }
         }
       }
 
-      eventEmitter.emit(name, extrinsicError, polkadotXcmError);
+      await ack(txRes);
     }
   };
 };

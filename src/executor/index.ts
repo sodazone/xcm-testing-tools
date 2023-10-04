@@ -1,48 +1,35 @@
-import { EventEmitter } from 'node:events';
+import { AckCallback } from '../types.js';
 
-type TxFunction = (...args: any[]) => Promise<void>;
+type TxFunction = () => void | Promise<void>;
 
 export class Executor {
-  eventEmitter: EventEmitter;
-  queue: TxFunction[];
+  #queue: TxFunction[];
+  #endCallback: () => void | Promise<void> = () => {};
 
-  constructor(eventEmitter: EventEmitter) {
-    this.eventEmitter = eventEmitter;
-    this.queue = [];
+  constructor() {
+    this.#queue = [];
   }
 
-  enqueue(fn: TxFunction, args: any[]) {
-    let eventName = 'start';
+  get ack() : AckCallback {
+    return this.#_ack.bind(this) as AckCallback;
+  }
 
-    if (this.queue.length > 0) {
-      eventName = this.queue[this.queue.length - 1].name;
-    }
-
-    this.eventEmitter.on(eventName, async (errorMessage: string) => {
-      if (errorMessage) {
-        this.eventEmitter.emit('error', errorMessage);
-      }
-      args.push(this.eventEmitter);
-      await fn.apply(this, args);
-      if (this.queue.length > 1) {
-        this.queue.shift();
-      } else {
-        const last = this.queue.shift();
-        if (last) {
-          this.eventEmitter.on(last.name, (msg: string) => {
-            this.eventEmitter.emit('done', msg);
-          });
-        } else {
-          this.eventEmitter.emit('done');
-        }
-      }
-    });
-
-    this.queue.push(fn);
+  push(fn: TxFunction) {
+    this.#queue.push(fn);
     return this;
   }
 
-  async execute() {
-    this.eventEmitter.emit('start');
+  async execute(endCallback: () => void | Promise<void>) {
+    this.#endCallback = endCallback;
+    this.#_ack();
+  }
+
+  async #_ack(_?: any) {
+    if (this.#queue.length > 0) {
+      const f = this.#queue.shift();
+      f && await f();
+    } else {
+      this.#endCallback();
+    }
   }
 }

@@ -1,14 +1,14 @@
 import chalk from 'chalk';
 
-function error(...msg : string[]) {
+function error(...msg : any[]) {
   console.error(chalk.red(...msg));
 }
 
-function info(...msg : string[]) {
+function info(...msg : any[]) {
   console.log(...msg);
 }
 
-function ok(...msg : string[]) {
+function ok(...msg : any[]) {
   console.log(chalk.green(...msg));
 }
 

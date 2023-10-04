@@ -1,10 +1,10 @@
 #!/usr/bin/env ts-node
 
-import { EventEmitter } from 'node:events';
 import { readFileSync } from 'node:fs';
 
 import { program } from 'commander';
 
+import type { KeyringPair } from '@polkadot/keyring/types';
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
@@ -18,17 +18,36 @@ import {
   forceRegisterReserveAsset
 } from '../calls/index.js';
 
-import log from './log.js';
 import { Chains } from '../chains/index.js';
 import { Executor } from '../executor/index.js';
-import { Config } from '../types.js';
+import { AckCallback, AssetCallArgs, AssetCallParaArgs, AssetConfig, Config } from '../types.js';
+import log from './log.js';
 
 type CliArgs = {
   configPath: string
   seed: string
 }
 
-const eventEmitter = new EventEmitter();
+function prepareArgs(
+  chains: Chains,
+  asset: AssetConfig,
+  owner: KeyringPair,
+  ack: AckCallback
+) {
+  const chain = chains.getChain(asset.location);
+  const callArgs : AssetCallArgs = {
+    chain, owner, asset, ack
+  };
+  const callParaArgs: AssetCallParaArgs = {
+    relaychain: chains.relaychain,
+    parachain: chain,
+    owner,
+    asset,
+    ack
+  };
+
+  return { chain, callArgs, callParaArgs };
+}
 
 async function main({ configPath, seed }: CliArgs) {
   // Parse config
@@ -44,42 +63,52 @@ async function main({ configPath, seed }: CliArgs) {
   const chains = new Chains();
   await chains.addNetworks(config.networks);
 
-  const executor = new Executor(eventEmitter);
+  const executor = new Executor();
 
   // Create and mint assets on their native chains
   for (const asset of config.assets) {
-    const chain = chains.getChain(asset.location);
+    const {
+      chain, callArgs, callParaArgs
+    } = prepareArgs(chains, asset, signer, executor.ack);
+
     if (chain.api.tx.assets) {
       executor
-        .enqueue(forceCreateAsset, [chain, chains.relaychain, signer, asset])
-        .enqueue(mintAsset, [chain, signer, asset]);
+        .push(() => forceCreateAsset(callParaArgs))
+        .push(() => mintAsset(callArgs));
     } else {
       throw new Error('Asset creation pallet not supported');
     }
   }
 
   // Register cross-chain assets
-  for (const xcAsset of config.xcAssets) {
-    const chain = chains.getChain(xcAsset.location);
+  for (const asset of config.xcAssets) {
+    const {
+      chain, callArgs, callParaArgs
+    } = prepareArgs(chains, asset, signer, executor.ack);
+
     if (chain.api.tx.assetRegistry) {
       executor
-        .enqueue(createXcAsset, [chain, signer, xcAsset])
-        .enqueue(forceRegisterReserveAsset, [chain, chains.relaychain, signer, xcAsset]);
+        .push(() => createXcAsset(callArgs))
+        .push(() => forceRegisterReserveAsset(callParaArgs));
     } else if (chain.api.tx.xcAssetConfig) {
       executor
-        .enqueue(createXcAsset, [chain, signer, xcAsset])
-        .enqueue(forceRegisterAssetLocation, [chain, chains.relaychain, signer, xcAsset]);
+        .push(() => createXcAsset(callArgs))
+        .push(() => forceRegisterAssetLocation(callParaArgs));
     } else {
-      throw new Error('XC asset registration pallet not supported');
+      throw new Error('Asset registration pallet not supported');
     }
   }
 
   // Fund sovereign accounts
+  const callArgs = { chains, signer, ack: executor.ack };
   executor
-    .enqueue(fundRelaySovereignAccounts, [chains, signer])
-    .enqueue(fundSiblingSovereignAccounts, [chains, signer]);
+    .push(() => fundRelaySovereignAccounts(callArgs))
+    .push(() => fundSiblingSovereignAccounts(callArgs));
 
-  executor.execute();
+  await executor.execute(() => {
+    log.ok('Done!');
+    process.exit(0);
+  });
 }
 
 program.name('assets')
@@ -93,19 +122,5 @@ program.parse();
 main({
   ...program.opts(),
   configPath: program.args[0]
-}).catch(console.error)
-  .finally(async () => {
-    eventEmitter.on('done', (errorMessage: string) => {
-      if (errorMessage) {
-        log.error(`Error while executing: ${errorMessage}.`);
-      }
-      log.info('Set up finished. Exiting...');
-      process.exit(0);
-    });
-
-    eventEmitter.on('error', (errorMessage: string) => {
-      log.error(`Error while executing: ${errorMessage}. Aborting subsequent transactions execution.`);
-      process.exit(1);
-    });
-  });
+}).catch(log.error);
 
