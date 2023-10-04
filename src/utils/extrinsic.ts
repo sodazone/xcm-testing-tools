@@ -55,7 +55,7 @@ export const txStatusCallback = (api: ApiPromise, ack: AckCallback) => {
   return async (result: ISubmittableResult) => {
     const { status } = result;
 
-    log.info('Transaction status:', status);
+    log.info('Transaction status:', status.toHuman());
 
     if (status.isFinalized) {
       const xterr = getExtrinsicError(api, result);

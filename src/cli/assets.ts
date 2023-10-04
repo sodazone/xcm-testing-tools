@@ -18,10 +18,11 @@ import {
   forceRegisterReserveAsset
 } from '../calls/index.js';
 
+import log from './log.js';
+
 import { Chains } from '../chains/index.js';
 import { Executor } from '../executor/index.js';
 import { AckCallback, AssetCallArgs, AssetCallParaArgs, AssetConfig, Config } from '../types.js';
-import log from './log.js';
 
 type CliArgs = {
   configPath: string
@@ -106,7 +107,7 @@ async function main({ configPath, seed }: CliArgs) {
     .push(() => fundSiblingSovereignAccounts(callArgs));
 
   await executor.execute(() => {
-    log.ok('Done!');
+    log.ok('OK');
     process.exit(0);
   });
 }

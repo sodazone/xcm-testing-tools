@@ -8,7 +8,6 @@ export async function sudoXcmCall(
   { parachain, relaychain, owner, ack }: AssetCallParaArgs
 ) {
   const forceRegisterCall = parachain.api.createType('Call', forceCall);
-
   const xcmDest = {
     V3: {
       parents: 0,
@@ -19,13 +18,11 @@ export async function sudoXcmCall(
       },
     },
   };
-
   const xcmCall = buildXcmTransactCall(relaychain.api, 'Superuser', forceRegisterCall.toHex(), xcmDest);
   const nonce = await relaychain.incrementGetNonce(owner.address);
 
   log.info(
-    'Sending Sudo XCM message from relay chain to execute forceRegister call on . Nonce:',
-    nonce
+    `Sending sudo XCM message from relay to ${parachain.name} (nonce:${nonce})`,
   );
 
   await relaychain.api.tx.sudo.sudo(xcmCall)

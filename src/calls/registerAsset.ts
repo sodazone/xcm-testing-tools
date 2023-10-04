@@ -22,7 +22,7 @@ export const createXcAsset = async (
 
   const nonce = await chain.incrementGetNonce(owner.address);
   console.log(
-    `Sending batch call to create asset [${asset.id} - ${asset.name}] and set metadata on chain ${asset.location}. Nonce: ${nonce}`
+    `Sending batch call to create asset [${asset.id} - ${asset.name}] and set metadata on chain ${asset.location} (nonce:${nonce})`
   );
   await batch.signAndSend(owner, { nonce }, txStatusCallback(api, ack));
 };

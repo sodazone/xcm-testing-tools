@@ -29,7 +29,7 @@ export const mintAsset = async ({
   const nonce = await chain.incrementGetNonce(owner.address);
 
   log.info(
-    `Sending batch call in order to mint asset ${asset.id} (${asset.symbol}) on chain ${asset.location}. Nonce: ${nonce}`
+    `Sending batch call in order to mint asset ${asset.id} (${asset.symbol}) on chain ${asset.location} (nonce:${nonce})`
   );
 
   await batch.signAndSend(owner, { nonce }, txStatusCallback(chain.api, ack));

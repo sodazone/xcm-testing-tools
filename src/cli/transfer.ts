@@ -1,6 +1,5 @@
 #!/usr/bin/env ts-node
 
-import { inspect } from 'node:util';
 import { program } from 'commander';
 
 import { Keyring } from '@polkadot/keyring';
@@ -54,7 +53,7 @@ const main = async ({
 
     log.info(
       'The following call data that is returned:',
-      inspect(submittableTx)
+      JSON.stringify(submittableTx, null, 2)
     );
   } catch (e) {
     console.error(e);
@@ -65,7 +64,7 @@ const main = async ({
     if (result.hasErrors) {
       process.exit(1);
     } else {
-      log.ok('All OK!');
+      log.ok('OK');
       process.exit(0);
     }
   }));
