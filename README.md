@@ -1,4 +1,4 @@
-# XCM Test Tools
+# XCM Testing Tools
 
 This repository contains a set of useful tools designed for setting up a zombienet and testing XCM asset transfers.
 These tools utilize the [asset-transfer-api](https://github.com/paritytech/asset-transfer-api) under the hood to facilitate asset transfer calls.
