@@ -15,10 +15,10 @@ download:
 zombienet config='./conf/zn-asset-hub-astar.toml':
   ./bin/zombienet -p native spawn {{config}}
 
-# Register XCM assets
+# Set up assets and sovereign accounts for XCM transfers
 assets *ARGS: build
   yarn assets {{ARGS}}
 
-# Transfer assets
+# Initiate asset transfer
 transfer *ARGS: build
   yarn transfer {{ARGS}}
