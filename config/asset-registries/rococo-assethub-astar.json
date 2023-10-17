@@ -1,0 +1,34 @@
+{
+  "rococo": {
+    "1000": {
+      "tokens": [
+        "ROC"
+      ],
+      "assetsInfo": {
+        "1984": "USDt"
+      },
+      "foreignAssetsInfo": {},
+      "poolPairsInfo": {},
+      "specName": "asset-hub-local"
+    },
+    "2000": {
+      "tokens": [
+        "SBY"
+      ],
+      "assetsInfo": {},
+      "foreignAssetsInfo": {},
+      "poolPairsInfo": {},
+      "specName": "shibuya",
+      "xcAssetsData": [
+        {
+          "paraID": 1000,
+          "symbol": "USDT",
+          "decimals": 6,
+          "xcmV1MultiLocation":
+          "{\"v1\":{\"parents\":1,\"interior\":{\"x3\":[{\"parachain\":1000},{\"palletInstance\":50},{\"generalIndex\":1984}]}}}",
+          "asset": "19841984"
+        }
+      ]
+    }
+  }
+}

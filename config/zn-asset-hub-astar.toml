@@ -4,7 +4,7 @@ timeout = 1000
 [relaychain]
 chain = "rococo-local"
 default_command = "./bin/polkadot"
-default_args = [ "-lparachain=debug" ]
+default_args = [ "--log=xcm=trace,parachain=debug" ]
 
   [[relaychain.nodes]]
   name = "alice"
@@ -34,7 +34,11 @@ cumulus_based = true
   command = "./bin/polkadot-parachain"
   args = ["--log=xcm=trace,pallet-assets=trace"]
   ws_port = 9910
+<<<<<<< HEAD:conf/zn-asset-hub-astar.toml
   p2p_port = 39708
+=======
+  p2p_port = 36647
+>>>>>>> 7d796c2 (support injected asset registries for transfer api):config/zn-asset-hub-astar.toml
 
 [[parachains]]
 id = 2000
@@ -46,7 +50,11 @@ cumulus_based = true
   command = "./bin/astar-collator"
   args = ["--log=xcm=trace"]
   ws_port = 9920
+<<<<<<< HEAD:conf/zn-asset-hub-astar.toml
   p2p_port = 39707
+=======
+  p2p_port = 40607
+>>>>>>> 7d796c2 (support injected asset registries for transfer api):config/zn-asset-hub-astar.toml
 
 [[hrmp_channels]]
 sender = 1000

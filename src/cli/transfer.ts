@@ -1,10 +1,12 @@
 #!/usr/bin/env ts-node
 
+import { readFileSync } from 'node:fs';
+
 import { program } from 'commander';
 
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-import { AssetTransferApi, constructApiPromise, TxResult } from '@substrate/asset-transfer-api';
+import { AssetTransferApi, constructApiPromise, TxResult, AssetTransferApiOpts } from '@substrate/asset-transfer-api';
 
 import log from './log.js';
 import { txStatusCallback } from '../utils/index.js';
@@ -16,7 +18,8 @@ type CliArgs = {
   recipient: string,
   assets: string[],
   amounts: string[],
-  xcmVersion?: number
+  xcmVersion?: number,
+  assetRegistry?: string
 }
 
 const main = async ({
@@ -26,7 +29,8 @@ const main = async ({
   recipient,
   assets,
   amounts,
-  xcmVersion
+  xcmVersion,
+  assetRegistry
 } : CliArgs) => {
   await cryptoWaitReady();
   const keyring = new Keyring({ type: 'sr25519' });
@@ -35,7 +39,16 @@ const main = async ({
   log.info(`Initializing API with ${url}`);
 
   const { api, specName, safeXcmVersion } = await constructApiPromise(url);
-  const assetApi = new AssetTransferApi(api, specName, safeXcmVersion);
+
+  const opts: AssetTransferApiOpts = {};
+
+  if (assetRegistry) {
+    const c = readFileSync(assetRegistry).toString();
+    opts.injectedRegistry = JSON.parse(c);
+    log.info(`Injecting registry: ${c}`);
+  }
+
+  const assetApi = new AssetTransferApi(api, specName, safeXcmVersion, opts);
 
   let submittableTx: TxResult<'submittable'>;
   try {
@@ -79,6 +92,7 @@ program.name('transfer')
   .requiredOption('-a, --assets <assets...>', 'asset ids')
   .requiredOption('-m, --amounts <amounts...>', 'asset amounts')
   .option('-x, -xcm-version <xcmVersion>', 'XCM version', '3')
+  .option('--asset-registry <assetRegistryPath>', 'path to injected asset registry')
   .argument('<url>', 'RPC endpoint URL')
   .addHelpText('after', `
 

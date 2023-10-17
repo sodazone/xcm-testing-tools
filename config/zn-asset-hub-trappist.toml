@@ -1,0 +1,61 @@
+[relaychain]
+default_command = "./bin/polkadot"
+default_args = [ "--log=xcm=trace,parachain=debug" ]
+chain = "rococo-local"
+
+  [[relaychain.nodes]]
+  name = "alice"
+  validator = true
+  ws_port = 9900
+  p2p_port = 39709
+
+  [[relaychain.nodes]]
+  name = "bob"
+  validator = true
+
+  [[relaychain.nodes]]
+  name = "charlie"
+  validator = true
+
+[[parachains]]
+id = 1000
+addToGenesis = true
+chain = "asset-hub-kusama-local"
+cumulus_based = true
+
+  [[parachains.collators]]
+  name = "statemine-collator01"
+  command = "./bin/polkadot-parachain"
+  args = ["--log=xcm=trace,pallet-assets=trace"]
+  ws_port = 9910
+  p2p_port = 36647
+
+[[parachains]]
+id = 2000
+add_to_genesis = true
+cumulus_based = true
+chain = "trappist-local"
+
+  [[parachains.collators]]
+  name = "trappist-collator01"
+  command = "./bin/trappist-collator"
+  ws_port = 9920
+  p2p_port = 40607
+  args = ["--log=xcm=trace,pallet-assets=trace"]
+
+[types.Header]
+number = "u64"
+parent_hash = "Hash"
+post_state = "Hash"
+
+[[hrmp_channels]]
+sender = 1000
+recipient = 2000
+max_capacity = 8
+max_message_size = 512
+
+[[hrmp_channels]]
+sender = 2000
+recipient = 1000
+max_capacity = 8
+max_message_size = 512
