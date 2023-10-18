@@ -12,7 +12,7 @@ download:
   ./scripts/download.sh
 
 # Runs zombienet 
-zombienet config='./conf/zn-asset-hub-astar.toml':
+zombienet config='./config/zn-asset-hub-astar.toml':
   ./bin/zombienet -p native spawn {{config}}
 
 # Set up assets and sovereign accounts for XCM transfers

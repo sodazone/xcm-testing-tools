@@ -46,3 +46,14 @@ export async function forceRegisterReserveAsset(args: AssetCallParaArgs) {
 
   await sudoXcmCall(forceRegister, args);
 }
+
+export async function forceSetAssetsUnitPerSecond(args: AssetCallParaArgs) {
+  const { parachain, asset } = args;
+
+  const setUnitsPerSecond = parachain.api.tx.xcAssetConfig
+    .setAssetUnitsPerSecond(
+      { V3: asset.assetMultiLocation }, 1
+    );
+
+  await sudoXcmCall(setUnitsPerSecond, args);
+}

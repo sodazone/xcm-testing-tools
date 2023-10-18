@@ -53,6 +53,19 @@
           ]
         }
       }
+    },
+    {
+      "id": 1001,
+      "name": "xcROC",
+      "symbol": "xcROC",
+      "decimals": 12,
+      "location": 2000,
+      "minBalance": 1000,
+      "isSufficient": true,
+      "assetMultiLocation": {
+        "parents": 1,
+        "interior": "Here"
+      }
     }
   ]
 }

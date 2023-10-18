@@ -1,4 +1,4 @@
-export * from './createAsset.js';
-export * from './fundSovereignAccounts.js';
-export * from './registerAsset.js';
+export * from './assets.js';
+export * from './sovereignAccounts.js';
+export * from './foreignAssests.js';
 export * from './sudo.js';

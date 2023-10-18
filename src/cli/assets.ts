@@ -15,7 +15,8 @@ import {
   fundRelaySovereignAccounts,
   fundSiblingSovereignAccounts,
   forceRegisterAssetLocation,
-  forceRegisterReserveAsset
+  forceRegisterReserveAsset,
+  forceSetAssetsUnitPerSecond
 } from '../calls/index.js';
 
 import log from './log.js';
@@ -94,7 +95,8 @@ async function main({ configPath, seed }: CliArgs) {
     } else if (chain.api.tx.xcAssetConfig) {
       executor
         .push(() => createXcAsset(callArgs))
-        .push(() => forceRegisterAssetLocation(callParaArgs));
+        .push(() => forceRegisterAssetLocation(callParaArgs))
+        .push(() => forceSetAssetsUnitPerSecond(callParaArgs));
     } else {
       throw new Error('Asset registration pallet not supported');
     }
