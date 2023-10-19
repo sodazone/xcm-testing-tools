@@ -10,6 +10,10 @@ export const forceCreateAsset = async (args: AssetCallParaArgs) => {
     asset.id, owner.address, asset.isSufficient, asset.minBalance
   );
 
+  log.info(
+    `Force creating asset ${asset.id} (${asset.symbol}) on chain ${asset.location}`
+  );
+
   await sudoXcmCall(forceCreate, args);
 };
 

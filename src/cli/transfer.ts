@@ -10,23 +10,35 @@ import { AssetTransferApi, constructApiPromise, TxResult, AssetTransferApiOpts }
 
 import log from './log.js';
 import { txStatusCallback } from '../utils/index.js';
+import { ApiPromise } from '@polkadot/api';
 
 type CliArgs = {
   url: string,
   seed: string,
   dest: string,
-  recipient: string,
+  recipients: string[],
   assets: string[],
   amounts: string[],
   xcmVersion?: number,
   assetRegistry?: string
 }
 
+function txCallback(api: ApiPromise) {
+  return txStatusCallback(api, result => {
+    if (result.hasErrors) {
+      process.exit(1);
+    } else {
+      log.ok('OK');
+      process.exit(0);
+    }
+  });
+}
+
 const main = async ({
   url,
   seed,
   dest,
-  recipient,
+  recipients,
   assets,
   amounts,
   xcmVersion,
@@ -50,37 +62,43 @@ const main = async ({
 
   const assetApi = new AssetTransferApi(api, specName, safeXcmVersion, opts);
 
-  let submittableTx: TxResult<'submittable'>;
-  try {
-    submittableTx = await assetApi.createTransferTransaction(
-      dest,
-      recipient,
-      assets,
-      amounts,
-      {
-        format: 'submittable',
-        isLimited: true,
-        xcmVersion: xcmVersion || safeXcmVersion,
-      }
-    );
+  const submittableTxs: TxResult<'submittable'>[] = [];
 
-    log.info(
-      'The following call data that is returned:',
-      JSON.stringify(submittableTx, null, 2)
-    );
-  } catch (e) {
-    console.error(e);
-    throw Error(e as string);
+  for (const r of recipients) {
+    try {
+      submittableTxs.push(await assetApi.createTransferTransaction(
+        dest,
+        r,
+        assets,
+        amounts,
+        {
+          format: 'submittable',
+          isLimited: true,
+          xcmVersion: xcmVersion || safeXcmVersion,
+        }
+      ));
+    } catch (e) {
+      console.error(e);
+      throw Error(e as string);
+    }
   }
 
-  await submittableTx.tx.signAndSend(signer, txStatusCallback(api, result => {
-    if (result.hasErrors) {
-      process.exit(1);
-    } else {
-      log.ok('OK');
-      process.exit(0);
-    }
-  }));
+  log.info(
+    'Call data:',
+    JSON.stringify(submittableTxs, null, 2)
+  );
+
+  if (submittableTxs.length === 0) {
+    log.info('No submittable extrinsics to send. Exiting.');
+    process.exit(0);
+  } else if (submittableTxs.length === 1) {
+    await submittableTxs[0].tx.signAndSend(signer, txCallback(api));
+  } else {
+    const txs = submittableTxs.map(s => s.tx);
+    const batch = api.tx.utility.batchAll(txs);
+    log.info(`Sending batched transfer: ${batch.toHex()}`);
+    await batch.signAndSend(signer, txCallback(api));
+  }
 };
 
 program.name('transfer')
@@ -88,7 +106,7 @@ program.name('transfer')
   .version('0.0.1')
   .option('-s, --seed <seed>', 'private account seed', '//Alice')
   .requiredOption('-d, --dest <dest>', 'destination chain id')
-  .requiredOption('-r, --recipient <recipient>', 'recipient account address')
+  .requiredOption('-r, --recipients <recipients...>', 'recipient account addresses')
   .requiredOption('-a, --assets <assets...>', 'asset ids')
   .requiredOption('-m, --amounts <amounts...>', 'asset amounts')
   .option('-x, -xcm-version <xcmVersion>', 'XCM version', '3')

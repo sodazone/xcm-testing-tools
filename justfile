@@ -22,3 +22,7 @@ assets *ARGS: build
 # Initiate asset transfer
 transfer *ARGS: build
   yarn transfer {{ARGS}}
+
+# Decode XCM data
+decode *ARGS: build
+  yarn decode {{ARGS}}

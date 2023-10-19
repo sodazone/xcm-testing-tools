@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import chalk from 'chalk';
 
 import { NetworkConfig } from '../types.js';
+import log from 'cli/log.js';
 
 const DEFAULT_TOKEN_DECIMALS = 12;
 const DEFAULT_SS58_PREFIX = 42;
@@ -35,7 +35,7 @@ export class Chain {
     this.name = name.toString();
     this.tokenDecimals = decimals && decimals[0] ? decimals[0].toNumber() : DEFAULT_TOKEN_DECIMALS;
     this.ss58Prefix = ss58Format ? ss58Format.toNumber() : DEFAULT_SS58_PREFIX;
-    console.log(chalk.green(`${this.name} (ID: ${this.id}) initialized.`));
+    log.ok(`${this.name} (ID: ${this.id}) initialized.`);
   }
 
   async getNonceFromChain(address: string) {

@@ -9,6 +9,7 @@
   },
   "bin": {
     "assets": "./dist/cli/assets.js",
+    "decode": "./dist/cli/decode.js",
     "transfer": "./dist/cli/transfer.js"
   },
   "devDependencies": {

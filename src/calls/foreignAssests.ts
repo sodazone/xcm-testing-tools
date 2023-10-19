@@ -1,3 +1,4 @@
+import log from '../cli/log.js';
 import { txStatusCallback } from '../utils/index.js';
 import { AssetCallArgs, AssetCallParaArgs } from '../types.js';
 import { sudoXcmCall } from './sudo.js';
@@ -21,7 +22,7 @@ export const createXcAsset = async (
   const batch = api.tx.utility.batchAll(txs);
 
   const nonce = await chain.incrementGetNonce(owner.address);
-  console.log(
+  log.info(
     `Sending batch call to create asset [${asset.id} - ${asset.name}] and set metadata on chain ${asset.location} (nonce:${nonce})`
   );
   await batch.signAndSend(owner, { nonce }, txStatusCallback(api, ack));
@@ -34,6 +35,9 @@ export async function forceRegisterAssetLocation(args: AssetCallParaArgs) {
       V3: { ...asset.assetMultiLocation }
     }, asset.id);
 
+  log.info(
+    `Force registering foreign asset [${asset.id} - ${asset.name}] on chain ${asset.location}`
+  );
   await sudoXcmCall(forceRegister, args);
 }
 
@@ -44,6 +48,9 @@ export async function forceRegisterReserveAsset(args: AssetCallParaArgs) {
       asset.id, asset.assetMultiLocation
     );
 
+  log.info(
+    `Force registering foreign asset [${asset.id} - ${asset.name}] on chain ${asset.location}`
+  );
   await sudoXcmCall(forceRegister, args);
 }
 
@@ -54,6 +61,10 @@ export async function forceSetAssetsUnitPerSecond(args: AssetCallParaArgs) {
     .setAssetUnitsPerSecond(
       { V3: asset.assetMultiLocation }, 1
     );
+
+  log.info(
+    `Force setting units per second for asset [${asset.id} - ${asset.name}] on chain ${asset.location}`
+  );
 
   await sudoXcmCall(setUnitsPerSecond, args);
 }
