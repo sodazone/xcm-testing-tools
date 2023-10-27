@@ -5,7 +5,7 @@
         "ROC"
       ],
       "assetsInfo": {
-        "1984": "USDt"
+        "1984": "rUSD"
       },
       "foreignAssetsInfo": {},
       "poolPairsInfo": {},
@@ -22,7 +22,7 @@
       "xcAssetsData": [
         {
           "paraID": 1000,
-          "symbol": "USDT",
+          "symbol": "xcrUSD",
           "decimals": 6,
           "xcmV1MultiLocation":
           "{\"v1\":{\"parents\":1,\"interior\":{\"x3\":[{\"parachain\":1000},{\"palletInstance\":50},{\"generalIndex\":1984}]}}}",

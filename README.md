@@ -1,7 +1,6 @@
 # XCM Testing Tools
 
 This repository contains a set of useful tools designed for setting up a zombienet and testing XCM asset transfers.
-These tools utilize the [asset-transfer-api](https://github.com/paritytech/asset-transfer-api) under the hood to facilitate asset transfer calls.
 
 ## Installation
 
@@ -35,11 +34,17 @@ From the root directory of the project, perform the following:
 
 1. Download binaries:
 
-> Note: if you are running in an non x86_64 architecture, please download the appropiate binaries manually.
+> Note: if you are running in a non x86_64 architecture, please download the appropiate binaries manually.
 
 ```shell
 just download
 ```
+
+The script will download the following binaries:
+- zombienet
+- polkadot
+- polkadot-parachain
+- astar-collator
 
 2. Run Zombienet:
 
@@ -47,17 +52,7 @@ just download
 just z
 ```
 
-3. Set up assets and sovereign accounts for XCM transfers:
-
-```shell
-just assets conf/assets.json
-```
-
-4. Initiate a transfer:
-
-```shell
-just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
-```
+The script will launch a network of one relay chain `rococo-local` and two parachains, `asset-hub-kusama-local` (paraId:1000) and `shibuya-dev` (paraId:2000).
 
 ## Manual Zombienet Setup
 
@@ -74,6 +69,12 @@ Follow these steps for manual setup of Zombienet:
 
 2. Copy the binaries into `<project-root>/bin` and make sure that they are executable (`chmod 755 bin/*`).
 
+3. Run Zombienet:
+   
+```shell
+./bin/zombienet -p native spawn ./config/zn-asset-hub-astar.toml
+```
+
 ---
 **Notes on Polkadot Versions**
 
@@ -81,40 +82,79 @@ Follow these steps for manual setup of Zombienet:
 * Currently Polkadot-SDK v1.1.0 binaries do not work with Zombienet preopen HRMP channel config. If you want to use preopen HRMP, you will need v1.0.0 binaries of `polkadot` and `polkadot-parachain`. You can also use v1.1.0 and do a `force_open_hrmp_channel`. More details in this [pull request](https://github.com/paritytech/polkadot-sdk/pull/1616).
 ---
 
-A sample Zombienet configuration file is located in `<project-root>/conf/zn-asset-hub-astar.toml`. 
+## Testing Asset Transfers
 
-To launch Zombienet with this configuration, execute the following command from the project root:
+> Make sure that Zombienet is launched and the chains are producing blocks before proceeding.
 
+### Asset Set-up
+
+Before we can start testing out cross-chain transfers, we first need to set up the assets and foreign assets on the parachains, and fund the sovereign accounts on each chain.
+
+Run:
 ```shell
-./bin/zombinet -p native spawn ./conf/zn-asset-hub-astar.toml
+just assets config/assets.json
 ```
 
-Ensure the project is built:
+The script will make a series of extrinsics across the different chains to set up assets, foreign assets and sovereign accounts required to make cross-chain transfers.
 
-```shell
-yarn install && yarn build
+The script uses the configuration found in `./config/assets.json`, which registers the asset `RUSD` on Asset Hub and foreign assets `xcRUSD` and `xcROC` on Shibuya. You can extend the configuration to add other assets if required.
+
+### Asset Transfer
+
+The transfer script utilizes [asset-transfer-api](https://github.com/paritytech/asset-transfer-api) under the hood to facilitate asset transfer calls.
+
+To see the help menu:
+
+```
+> just transfer -h
+
+Usage: transfer [options] <url>
+
+Transfer XCM assets.
+
+Arguments:
+  url                                   RPC endpoint URL
+
+Options:
+  -V, --version                         output the version number
+  -s, --seed <seed>                     private account seed (default: "//Alice")
+  -d, --dest <dest>                     destination chain id
+  -r, --recipients <recipients...>      recipient account addresses
+  -a, --assets <assets...>              asset ids
+  -m, --amounts <amounts...>            asset amounts
+  -x, -xcm-version <xcmVersion>         XCM version (default: "3")
+  --asset-registry <assetRegistryPath>  path to injected asset registry
+  -h, --help                            display help for command
+
+
+  Example call:
+    $ transfer ws://127.0.0.1:9944 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
 ```
 
-To set up assets and sovereign accounts required for an XCM asset transfer, use the following command:
+Example transfer from Asset Hub to Shibuya:
 
 ```shell
-yarn assets ./conf/assets.json
+just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
 ```
 
-> You can modify the configuration file to register different assets than the default '1984' token.
+#### Inject Asset Registries
 
-## XCM Transfers
+The `asset-transfer-api` only contain registries for the well-known relay chains and system parachains (currently only Asset Hub). As such, to use the `asset-transfer-api` for other parachains, we will need to inject an asset registry to the API.
 
-Use the following command to initiate XCM transfers:
+Example transfer from Rococo to Shibuya with injected registry:
 
-```shell
-yarn transfer [options] <url>
 ```
+just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
+```
+
+#### Testing Batch Transfers
+
+If an array is passed to the recipients parameter, the transfer script will automatically generate a transfer call for each recipient and bundle them into a `utility.batch` extrinsic.
 
 Example:
 
-```shell
-yarn transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw -a 1984 -m 1500000000000
+```
+just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 ZAP5o2BjWAo5uoKDE6b6Xkk4Ju7k6bDu24LNjgZbfM3iyiR -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
 ```
 
 ---

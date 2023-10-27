@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
 import { NetworkConfig } from '../types.js';
-import log from 'cli/log.js';
+import log from '../cli/log.js';
 
 const DEFAULT_TOKEN_DECIMALS = 12;
 const DEFAULT_SS58_PREFIX = 42;
