@@ -162,6 +162,18 @@ Example:
 just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 ZAP5o2BjWAo5uoKDE6b6Xkk4Ju7k6bDu24LNjgZbfM3iyiR -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
 ```
 
+#### Testing UMP Messages
+
+It's important to note that currently, the `asset-transfer-api` does not support UMP transfers i.e. transfers from parachain to relaychain ([ref](https://github.com/paritytech/asset-transfer-api/blob/a26de7723e7e3cbd35488b8b30547e6bc08be2c9/src/AssetTransferApi.ts#L602)). To conduct UMP transfers, you can utilize the Polkadot.js explorer to construct the extrinsic and sign it.
+
+Here's an example of an encoded transfer from local Shibuya to local Rococo:
+
+```
+0x3700e903000000000000000000000000000000ca9a3b0000000000000000000000000301010100d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00
+```
+
+You can paste this code into the `decode` tab of Polkadot.js app (`https://polkadot.js.org/apps/?rpc=<YOUR_RPC_WS_ENDPOINT>#/extrinsics/decode`) to inspect the decoded extrinsic.
+
 ---
 
 Feel free to reach out if you encounter any issues or have questions related to this setup.
