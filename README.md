@@ -75,35 +75,40 @@ Follow these steps for manual setup of Zombienet:
 ./bin/zombienet -p native spawn ./config/zn-asset-hub-astar.toml
 ```
 
+## Setup with Other Parachains
+
+To incorporate different parachain runtimes into Zombienet, follow these straightforward steps. Begin by downloading or building the binaries of the desired parachain. Then, copy these binaries into the `<root-project>/bin` directory and update the Zombienet configuration located at `<root-project>/config`. The scripts mentioned earlier utilize the sample configuration `<root-project>/config/zn-asset-hub-astar.toml`. Alternatively, there's another configuration available that employs [Trappist](https://github.com/paritytech/trappist) as parachain 2000.
+
+However, it's important to note that Trappist employs `pallet-xcm`, which currently lacks support for the withdrawal of reserve-backed assets from a remote location. For additional information, refer to this [pull request](https://github.com/paritytech/polkadot-sdk/pull/1672).
+
 ---
 **Notes on Polkadot Versions**
 
 * If using Polkadot-SDK v1.1.0 binaries, you will need additional binaries `polkadot-prepare-worker` and `polkadot-execute-worker` ([ref](https://github.com/paritytech/polkadot/pull/7337))
-* Currently Polkadot-SDK v1.1.0 binaries do not work with Zombienet preopen HRMP channel config. If you want to use preopen HRMP, you will need v1.0.0 binaries of `polkadot` and `polkadot-parachain`. You can also use v1.1.0 and do a `force_open_hrmp_channel`. More details in this [pull request](https://github.com/paritytech/polkadot-sdk/pull/1616).
+* Currently Polkadot-SDK v1.1.0 binaries do not work with Zombienet preopen HRMP channel config. For preopen HRMP, use v1.0.0 binaries of `polkadot` and `polkadot-parachain`. Alternatively, use v1.1.0 and perform a force_open_hrmp_channel. More details in this [pull request](https://github.com/paritytech/polkadot-sdk/pull/1616).
 ---
 
 ## Testing Asset Transfers
 
-> Make sure that Zombienet is launched and the chains are producing blocks before proceeding.
+> Ensure that Zombienet is launched and the chains are producing blocks before proceeding.
 
 ### Asset Set-up
 
-Before we can start testing out cross-chain transfers, we first need to set up the assets and foreign assets on the parachains, and fund the sovereign accounts on each chain.
+Before testing cross-chain transfers, run the following script to set up assets and foreign assets on the parachains, and fund the sovereign accounts on each chain.
 
-Run:
 ```shell
 just assets config/assets.json
 ```
 
-The script will make a series of extrinsics across the different chains to set up assets, foreign assets and sovereign accounts required to make cross-chain transfers.
+This script will execute a series of extrinsics across different chains to configure assets, foreign assets, and sovereign accounts necessary for cross-chain transfers.
 
-The script uses the configuration found in `./config/assets.json`, which registers the asset `RUSD` on Asset Hub and foreign assets `xcRUSD` and `xcROC` on Shibuya. You can extend the configuration to add other assets if required.
+The script uses the configuration in `./config/assets.json`, which registers the asset `RUSD` on Asset Hub and foreign assets `xcRUSD` and `xcROC` on Shibuya. Extend the configuration to add other assets and chains if needed.
 
 ### Asset Transfer
 
-The transfer script utilizes [asset-transfer-api](https://github.com/paritytech/asset-transfer-api) under the hood to facilitate asset transfer calls.
+The transfer script uses [asset-transfer-api](https://github.com/paritytech/asset-transfer-api) to facilitate asset transfer calls.
 
-To see the help menu:
+To view the help menu:
 
 ```
 > just transfer -h
@@ -139,9 +144,9 @@ just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS
 
 #### Inject Asset Registries
 
-The `asset-transfer-api` only contain registries for the well-known relay chains and system parachains (currently only Asset Hub). As such, to use the `asset-transfer-api` for other parachains, we will need to inject an asset registry to the API.
+The `asset-transfer-api` contains registries only for well-known relay chains and system parachains (currently only Asset Hub). To use the `asset-transfer-api` for other parachains, inject an asset registry into the API.
 
-Example transfer from Rococo to Shibuya with injected registry:
+Example transfer from Rococo to Shibuya with an injected registry:
 
 ```
 just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
@@ -149,7 +154,7 @@ just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v
 
 #### Testing Batch Transfers
 
-If an array is passed to the recipients parameter, the transfer script will automatically generate a transfer call for each recipient and bundle them into a `utility.batch` extrinsic.
+If an array is passed to the recipients parameter, the transfer script will generate a transfer call for each recipient and bundle them into a `utility.batch` extrinsic.
 
 Example:
 
