@@ -77,9 +77,9 @@ Follow these steps for manual setup of Zombienet:
 
 ## Setup with Other Parachains
 
-To incorporate different parachain runtimes into Zombienet, follow these straightforward steps. Begin by downloading or building the binaries of the desired parachain. Then, copy these binaries into the `<root-project>/bin` directory and update the Zombienet configuration located at `<root-project>/config`. The scripts mentioned earlier utilize the sample configuration `<root-project>/config/zn-asset-hub-astar.toml`. Alternatively, there's another configuration available that employs [Trappist](https://github.com/paritytech/trappist) as parachain 2000.
+To incorporate different parachain runtimes into Zombienet, download or build the binaries of the desired parachains and copy them into the `<root-project>/bin` directory. Update the configuration located at `<root-project>/config` to add the new chains before running Zombienet. 
 
-However, it's important to note that Trappist employs `pallet-xcm`, which currently lacks support for the withdrawal of reserve-backed assets from a remote location. For additional information, refer to this [pull request](https://github.com/paritytech/polkadot-sdk/pull/1672).
+The scripts mentioned earlier utilize the sample configuration `<root-project>/config/zn-asset-hub-astar.toml`. Alternatively, there's another configuration available that employs [Trappist](https://github.com/paritytech/trappist) as parachain 2000. However, it is important to note that Trappist employs `pallet-xcm`, which currently lacks support for the withdrawal of reserve-backed assets from a remote location. For additional information, refer to this [pull request](https://github.com/paritytech/polkadot-sdk/pull/1672).
 
 ---
 **Notes on Polkadot Versions**
@@ -102,7 +102,7 @@ just assets config/assets.json
 
 This script will execute a series of extrinsics across different chains to configure assets, foreign assets, and sovereign accounts necessary for cross-chain transfers.
 
-The script uses the configuration in `./config/assets.json`, which registers the asset `RUSD` on Asset Hub and foreign assets `xcRUSD` and `xcROC` on Shibuya. Extend the configuration to add other assets and chains if needed.
+The script uses the configuration in `./config/assets.json`, which registers the asset `RUSD` on parachain 1000 and foreign assets `xcRUSD` and `xcROC` on parachain 2000. Extend the configuration to add other assets and chains if needed.
 
 ### Asset Transfer
 
@@ -136,7 +136,7 @@ Options:
     $ transfer ws://127.0.0.1:9944 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
 ```
 
-Example transfer from Asset Hub to Shibuya:
+Example transfer from parachain 1000 to parachain 2000:
 
 ```shell
 just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
@@ -146,7 +146,7 @@ just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS
 
 The `asset-transfer-api` contains registries only for well-known relay chains and system parachains (currently only Asset Hub). To use the `asset-transfer-api` for other parachains, inject an asset registry into the API.
 
-Example transfer from Rococo to Shibuya with an injected registry:
+Example transfer from relaychain to parachain 2000 (Shibuya) with an injected registry:
 
 ```
 just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
@@ -166,7 +166,7 @@ just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v
 
 It's important to note that currently, the `asset-transfer-api` does not support UMP transfers i.e. transfers from parachain to relaychain ([ref](https://github.com/paritytech/asset-transfer-api/blob/a26de7723e7e3cbd35488b8b30547e6bc08be2c9/src/AssetTransferApi.ts#L602)). To conduct UMP transfers, you can utilize the Polkadot.js explorer to construct the extrinsic and sign it.
 
-Here's an example of an encoded transfer from local Shibuya to local Rococo:
+Here's an example of an encoded transfer from local Shibuya to local Rococo relay:
 
 ```
 0x3700e903000000000000000000000000000000ca9a3b0000000000000000000000000301010100d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00
