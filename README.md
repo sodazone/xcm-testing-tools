@@ -110,9 +110,11 @@ The transfer script uses [asset-transfer-api](https://github.com/paritytech/asse
 
 To view the help menu:
 
+```shell
+just transfer -h
 ```
-> just transfer -h
 
+```shell
 Usage: transfer [options] <url>
 
 Transfer XCM assets.
@@ -148,7 +150,7 @@ The `asset-transfer-api` contains registries only for well-known relay chains an
 
 Example transfer from relaychain to parachain 2000 (Shibuya) with an injected registry:
 
-```
+```shell
 just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
 ```
 
@@ -158,7 +160,7 @@ If an array is passed to the recipients parameter, the transfer script will gene
 
 Example:
 
-```
+```shell
 just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 ZAP5o2BjWAo5uoKDE6b6Xkk4Ju7k6bDu24LNjgZbfM3iyiR -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
 ```
 
