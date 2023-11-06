@@ -16,7 +16,7 @@ test -f zombienet || wget https://github.com/paritytech/zombienet/releases/downl
 test -f polkadot || wget https://github.com/paritytech/polkadot/releases/download/v1.0.0/polkadot -O polkadot
 test -f polkadot-parachain || wget https://github.com/paritytech/cumulus/releases/download/v1.0.0/polkadot-parachain -O polkadot-parachain
 test -f astar-collator || { 
-  wget https://github.com/AstarNetwork/Astar/releases/download/v5.19.0/astar-collator-v5.19.0-ubuntu-x86_64.tar.gz -O astar-collator.tgz
+  wget https://github.com/AstarNetwork/Astar/releases/download/v5.23.0/astar-collator-v5.23.0-ubuntu-x86_64.tar.gz -O astar-collator.tgz
   tar xzf astar-collator.tgz
   rm astar-collator.tgz
 }
