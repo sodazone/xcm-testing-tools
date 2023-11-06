@@ -20,9 +20,9 @@ default_args = [ "--log=xcm=trace,parachain=debug" ]
   name = "charlie"
   validator = true
 
-  #[[relaychain.nodes]]
-  #name = "dave"
-  #validator = true
+  [[relaychain.nodes]]
+  name = "dave"
+  validator = true
 
 [[parachains]]
 id = 1000
@@ -35,6 +35,10 @@ cumulus_based = true
   args = ["--log=xcm=trace,pallet-assets=trace"]
   ws_port = 9910
   p2p_port = 36647
+  [[parachains.collators]]
+  name = "asset-hub-collator2"
+  command = "./bin/polkadot-parachain"
+  args = ["--log=xcm=trace,pallet-assets=trace"]
 
 [[parachains]]
 id = 2000
@@ -47,6 +51,10 @@ cumulus_based = true
   args = ["--log=xcm=trace"]
   ws_port = 9920
   p2p_port = 40607
+  [[parachains.collators]]
+  name = "astar-collator2"
+  command = "./bin/astar-collator"
+  args = ["--log=xcm=trace"]
 
 [[hrmp_channels]]
 sender = 1000
