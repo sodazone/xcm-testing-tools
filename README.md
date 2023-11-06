@@ -249,6 +249,12 @@ Example transfer from parachain 1000 to parachain 2000:
 just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
 ```
 
+You can also use the `watch` command if it is available in your system to execute a transfer periodically:
+
+```shell
+watch -n 300 just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY -a 1984 -m 1500000000000
+```
+
 #### Inject Asset Registries
 
 The `asset-transfer-api` contains registries only for well-known relay chains and system parachains (currently only Asset Hub). To use the `asset-transfer-api` for other parachains, inject an asset registry into the API.
