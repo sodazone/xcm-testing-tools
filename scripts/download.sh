@@ -12,7 +12,7 @@ test $(uname -m) = "x86_64" || {
   exit 1
 }
 
-test -f zombienet || wget https://github.com/paritytech/zombienet/releases/download/v1.3.68/zombienet-linux-x64 -O zombienet
+test -f zombienet || wget https://github.com/paritytech/zombienet/releases/download/v1.3.79/zombienet-linux-x64 -O zombienet
 test -f polkadot || wget https://github.com/paritytech/polkadot/releases/download/v1.0.0/polkadot -O polkadot
 test -f polkadot-parachain || wget https://github.com/paritytech/cumulus/releases/download/v1.0.0/polkadot-parachain -O polkadot-parachain
 test -f astar-collator || { 
