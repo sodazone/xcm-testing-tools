@@ -22,7 +22,7 @@ async function main({ url, data } : CliArgs) {
     'XcmVersionedXcm', data
   );
 
-  log.info('Decoded XCM program:', JSON.stringify(xcmProgram.toHuman(), null, 2));
+  log.info(JSON.stringify(xcmProgram.toHuman(), null, 2));
   process.exit(0);
 }
 
@@ -34,7 +34,7 @@ program.name('decode')
   .addHelpText('after', `
 
   Example call:
-    $ instructions ws://127.0.0.1:9944 -d 0x0310...5322`
+    $ decode ws://127.0.0.1:9944 -d 0x0310...5322`
   );
 
 program.parse();

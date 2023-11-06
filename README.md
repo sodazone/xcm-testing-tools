@@ -155,7 +155,7 @@ Follow these steps for manual setup of Zombienet:
 ./bin/zombienet -p native spawn ./config/zn-asset-hub-astar.toml
 ```
 
-## Setup with Other Parachains
+### Setup with Other Parachains
 
 To incorporate different parachain runtimes into Zombienet, download or build the binaries of the desired parachains and copy them into the `<root>/bin` directory. Update the configuration located at `<root>/config` to add the new chains before running Zombienet. 
 
@@ -280,6 +280,104 @@ Here's an example of an encoded transfer from local Shibuya to local Rococo rela
 ```
 
 You can paste this code into the `decode` tab of Polkadot.js app (`https://polkadot.js.org/apps/?rpc=<YOUR_RPC_WS_ENDPOINT>#/extrinsics/decode`) to inspect the decoded extrinsic.
+
+## Decode XCM Message Data
+
+In addition to the aforementioned scripts used for testing Zombienet cross-chain asset transfers, there is a convenient script available to decode XCM message data into its corresponding instruction set. This could be useful for inspecting queued cross-chain messages.
+
+To access the help menu, use the following command in your terminal or command prompt:
+
+```shell
+just decode --help
+```
+
+This will display the usage information, options, and arguments for the decode command.
+
+```shell
+Usage: decode [options] <url>
+
+Decode XCM data.
+
+Arguments:
+  url                RPC endpoint URL
+
+Options:
+  -V, --version      output the version number
+  -d, --data <data>  XCM data (default: "0x0310...5322")
+  -h, --help         display help for command
+
+
+  Example call:
+    $ decode ws://127.0.0.1:9944 -d 0x0310...5322
+```
+
+Here is an example of how to decode XCM data using the decode command:
+```shell
+just decode wss://rpc.polkadot.io -d 0x031001040001000007504dd1dc090a130001000007504dd1dc09000d01020400010100cc5aa1bd751e2a26534fa5daf5776f63192147310e2b18c52330704f5ed0a257
+```
+
+<details>
+  <summary>Example Decoded XCM Instructions</summary>
+
+  ```json
+  {
+  "V3": [
+    {
+      "ReserveAssetDeposited": [
+        {
+          "id": {
+            "Concrete": {
+              "parents": "1",
+              "interior": "Here"
+            }
+          },
+          "fun": {
+            "Fungible": "42,359,410,000"
+          }
+        }
+      ]
+    },
+    "ClearOrigin",
+    {
+      "BuyExecution": {
+        "fees": {
+          "id": {
+            "Concrete": {
+              "parents": "1",
+              "interior": "Here"
+            }
+          },
+          "fun": {
+            "Fungible": "42,359,410,000"
+          }
+        },
+        "weightLimit": "Unlimited"
+      }
+    },
+    {
+      "DepositAsset": {
+        "assets": {
+          "Wild": {
+            "AllCounted": "1"
+          }
+        },
+        "beneficiary": {
+          "parents": "0",
+          "interior": {
+            "X1": {
+              "AccountId32": {
+                "network": null,
+                "id": "0xcc5aa1bd751e2a26534fa5daf5776f63192147310e2b18c52330704f5ed0a257"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+  ```
+</details>
 
 ---
 
