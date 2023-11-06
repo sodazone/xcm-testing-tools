@@ -5,7 +5,7 @@ default:
 
 # Builds the project
 build:
-  yarn build > /dev/null
+  yarn build
 
 # Downloads zombienet binaries
 download:
@@ -16,13 +16,13 @@ zombienet config='./config/zn-asset-hub-astar.toml':
   ./bin/zombienet -p native spawn {{config}}
 
 # Set up assets and sovereign accounts for XCM transfers
-assets *ARGS: build
+assets *ARGS:
   yarn assets {{ARGS}}
 
 # Initiate asset transfer
-transfer *ARGS: build
+transfer *ARGS:
   yarn transfer {{ARGS}}
 
 # Decode XCM data
-decode *ARGS: build
+decode *ARGS:
   yarn decode {{ARGS}}

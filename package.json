@@ -1,10 +1,9 @@
 {
   "name": "xcm-test-tools",
   "packageManager": "yarn@3.6.3",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "build": "substrate-exec-rimraf ./dist && substrate-exec-tsc && yarn sed:shebang",
-    "sed:shebang": "shx sed -i \"s/\\/env ts-node/\\/env node/g\" ./dist/cli/*.js > /dev/null",
+    "build": "substrate-exec-rimraf ./dist && substrate-exec-tsc",
     "lint": "eslint --cache --fix --ext .ts src/"
   },
   "bin": {
@@ -18,8 +17,7 @@
     "@typescript-eslint/parser": "^6.7.3",
     "chalk": "4.1.2",
     "eslint": "^8.50.0",
-    "shx": "^0.3.4",
-    "ts-node": "^10.9.1"
+    "shx": "^0.3.4"
   },
   "dependencies": {
     "@substrate/asset-transfer-api": "^0.1.0",
