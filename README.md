@@ -131,7 +131,8 @@ When successfully launched, you should see an output in your console similar to 
    ```
 </details>
 
-Please verify that your chains are producing blocks before proceeding to [test asset transfers](#testing-asset-transfers).
+Please verify that your chains are producing blocks before proceeding to [test asset transfers](#testing-asset-transfers). If your Zombienet is not producing blocks or has stalled, please try restarting it.
+
 ### Manual Setup
 
 > [!NOTE]
@@ -179,7 +180,32 @@ Before testing cross-chain transfers, run the following script to configure asse
 just assets config/assets.json
 ```
 
-This script will execute a series of extrinsics across different chains to configure assets, foreign assets, and sovereign accounts necessary for cross-chain transfers.
+This script executes a series of extrinsics across different chains to configure assets, foreign assets, and sovereign accounts required for cross-chain transfers. The script waits for each previous extrinsic to be finalized before executing the next one, so it may take some time to complete.
+
+At the end of the script, you should see an output similar to the one shown below:
+
+<details>
+  <summary>Zombienet Launch Output</summary>
+
+```shell
+...
+...
+Transfering 2000000000000 to fund sibling sovereign account YYd75rNoMUyogjtjaJPjWX7QHvYky5BSHz1wTmQ3dXj2pk6 on parachain Kusama Asset Hub Local (nonce:1)
+Transfering 2000000000000000000 to fund sibling sovereign account FBeL7EFTDeHnuViqaUHUXvhhUusN5FawDmHgfvzF97DXFr3 on parachain Shibuya Testnet (nonce:2)
+Transaction status: Ready
+Transaction status: Ready
+Transaction status: {
+  InBlock: '0xef4f7d39c92012747c6ea69b77cda09a9d0dd7f6e3d2b8e645193593b9ea293e'
+}
+Transaction status: {
+  InBlock: '0xb968dbad489daeee698c2cef2ef03fb525641c21114c69fa12ccb42a702e1a81'
+}
+Transaction status: {
+  Finalized: '0xef4f7d39c92012747c6ea69b77cda09a9d0dd7f6e3d2b8e645193593b9ea293e'
+}
+OK
+```
+</details>
 
 The script uses the configuration in `./config/assets.json`, which registers the asset `RUSD` on parachain 1000 and foreign assets `xcRUSD` and `xcROC` on parachain 2000. Extend the configuration to add other assets and chains if needed.
 
