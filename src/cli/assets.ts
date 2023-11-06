@@ -109,7 +109,7 @@ async function main({ configPath, seed }: CliArgs) {
     .push(() => fundSiblingSovereignAccounts(callArgs));
 
   await executor.execute(() => {
-    log.ok('OK');
+    log.ok('✨ All done! ✨');
     process.exit(0);
   });
 }

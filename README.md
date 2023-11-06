@@ -203,7 +203,7 @@ Transaction status: {
 Transaction status: {
   Finalized: '0xef4f7d39c92012747c6ea69b77cda09a9d0dd7f6e3d2b8e645193593b9ea293e'
 }
-OK
+✨ All done! ✨
 ```
 </details>
 
