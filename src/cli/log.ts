@@ -1,7 +1,11 @@
-import chalk from 'chalk';
+function color(c: number, ...msg: any[]) {
+  return msg.map(
+    m => '\x1b[' + c + 'm' + m + '\x1b[0m'
+  );
+}
 
 function error(...msg : any[]) {
-  console.error(chalk.red(...msg));
+  console.error(color(31, ...msg));
 }
 
 function info(...msg : any[]) {
@@ -9,7 +13,7 @@ function info(...msg : any[]) {
 }
 
 function ok(...msg : any[]) {
-  console.log(chalk.green(...msg));
+  console.log(color(32, ...msg));
 }
 
 export default {
