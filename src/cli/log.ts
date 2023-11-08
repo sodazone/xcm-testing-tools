@@ -1,11 +1,5 @@
-function color(c: number, ...msg: any[]) {
-  return msg.map(
-    m => '\x1b[' + c + 'm' + m + '\x1b[0m'
-  );
-}
-
 function error(...msg : any[]) {
-  console.error(color(31, ...msg));
+  console.error(...msg);
 }
 
 function info(...msg : any[]) {
@@ -13,7 +7,7 @@ function info(...msg : any[]) {
 }
 
 function ok(...msg : any[]) {
-  console.log(color(32, ...msg));
+  console.log(...msg);
 }
 
 export default {
