@@ -234,7 +234,7 @@ Options:
   -r, --recipients <recipients...>      recipient account addresses
   -a, --assets <assets...>              asset ids
   -m, --amounts <amounts...>            asset amounts
-  -x, -xcm-version <xcmVersion>         XCM version (default: "3")
+  -x, --xcm-version <xcmVersion>         XCM version (default: "3")
   --asset-registry <assetRegistryPath>  path to injected asset registry
   -h, --help                            display help for command
 
@@ -300,26 +300,26 @@ just decode --help
 This will display the usage information, options, and arguments for the decode command.
 
 ```shell
-Usage: decode [options] <url>
+Usage: decode [options] <data>
 
 Decode XCM data.
 
 Arguments:
-  url                RPC endpoint URL
+  data           XCM program as hex string
 
 Options:
-  -V, --version      output the version number
-  -d, --data <data>  XCM data (default: "0x0310...5322")
-  -h, --help         display help for command
+  -V, --version  output the version number
+  --hrmp         Flag to indicate if data is HRMP program
+  -h, --help     display help for command
 
-
+  
   Example call:
-    $ decode ws://127.0.0.1:9944 -d 0x0310...5322
+    $ decode --hrmp 0x000310010400010100591f001761f247160a6575a80b0a1300010100591f001761f247160a6575a80b000d01020400010100f2b9740bff0f93715ec5e83f6a27346904558ba33c5e93da03cf9ef75052a952
 ```
 
 Here is an example of how to decode XCM data using the decode command:
 ```shell
-just decode wss://rpc.polkadot.io -d 0x031001040001000007504dd1dc090a130001000007504dd1dc09000d01020400010100cc5aa1bd751e2a26534fa5daf5776f63192147310e2b18c52330704f5ed0a257
+just decode 0x031001040001000007504dd1dc090a130001000007504dd1dc09000d01020400010100cc5aa1bd751e2a26534fa5daf5776f63192147310e2b18c52330704f5ed0a257
 ```
 
 <details>
