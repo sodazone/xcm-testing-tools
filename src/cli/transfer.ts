@@ -109,7 +109,7 @@ program.name('transfer')
   .requiredOption('-r, --recipients <recipients...>', 'recipient account addresses')
   .requiredOption('-a, --assets <assets...>', 'asset ids')
   .requiredOption('-m, --amounts <amounts...>', 'asset amounts')
-  .option('-x, -xcm-version <xcmVersion>', 'XCM version', '3')
+  .option('-x, --xcm-version <xcmVersion>', 'XCM version', '3')
   .option('--asset-registry <assetRegistryPath>', 'path to injected asset registry')
   .argument('<url>', 'RPC endpoint URL')
   .addHelpText('after', `
