@@ -19,7 +19,7 @@ type CliArgs = {
   recipients: string[],
   assets: string[],
   amounts: string[],
-  xcmVersion?: number,
+  xcmVersion?: string,
   assetRegistry?: string
 }
 
@@ -74,7 +74,7 @@ const main = async ({
         {
           format: 'submittable',
           isLimited: true,
-          xcmVersion: xcmVersion || safeXcmVersion,
+          xcmVersion: xcmVersion ? parseInt(xcmVersion) : safeXcmVersion,
         }
       ));
     } catch (e) {
@@ -109,7 +109,7 @@ program.name('transfer')
   .requiredOption('-r, --recipients <recipients...>', 'recipient account addresses')
   .requiredOption('-a, --assets <assets...>', 'asset ids')
   .requiredOption('-m, --amounts <amounts...>', 'asset amounts')
-  .option('-x, --xcm-version <xcmVersion>', 'XCM version', '3')
+  .option('-x, --xcm-version <xcmVersion>', 'XCM version')
   .option('--asset-registry <assetRegistryPath>', 'path to injected asset registry')
   .argument('<url>', 'RPC endpoint URL')
   .addHelpText('after', `
