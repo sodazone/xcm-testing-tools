@@ -19,7 +19,7 @@ export async function fundRelaySovereignAccounts({
 
     log.info(`Transfering ${amount} to fund soverign account ${address} on ${relay.name}`);
 
-    txs.push(relay.api.tx.balances.transfer(address, amount));
+    txs.push(relay.api.tx.balances.transferKeepAlive(address, amount));
   }
   const batch = relay.api.tx.utility.batchAll(txs);
 
@@ -52,7 +52,7 @@ export async function fundSiblingSovereignAccounts({
           `Transfering ${amount} to fund sibling sovereign account ${address} on parachain ${parachain.name} (nonce:${nonce})`
         );
 
-        await parachain.api.tx.balances.transfer(address, amount)
+        await parachain.api.tx.balances.transferKeepAlive(address, amount)
           .signAndSend(signer, { nonce }, txStatusCallback(parachain.api, ack));
       }
     }

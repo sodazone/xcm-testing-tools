@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import '@polkadot/api-augment/polkadot';
 
 import { readFileSync } from 'node:fs';
 
@@ -16,7 +17,8 @@ import {
   fundSiblingSovereignAccounts,
   forceRegisterAssetLocation,
   forceRegisterReserveAsset,
-  forceSetAssetsUnitPerSecond
+  forceSetAssetsUnitPerSecond,
+  sudoForceOpenHrmpChannel
 } from '../calls/index.js';
 
 import log from './log.js';
@@ -66,6 +68,21 @@ async function main({ configPath, seed }: CliArgs) {
   await chains.addNetworks(config.networks);
 
   const executor = new Executor();
+
+  // Force open HRMP channels
+  // TODO: batch it
+  for (const channel of config.channels) {
+    executor.push(
+      () => sudoForceOpenHrmpChannel(
+        {
+          chains,
+          signer,
+          ack: executor.ack
+        },
+        channel
+      )
+    );
+  }
 
   // Create and mint assets on their native chains
   for (const asset of config.assets) {

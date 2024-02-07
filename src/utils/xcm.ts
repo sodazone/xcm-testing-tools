@@ -42,12 +42,7 @@ export function buildXcmTransactCall(api: ApiPromise, originKind: string, call: 
   };
   const multiLocation = api.createType('XcmVersionedMultiLocation', dest);
   const xcmVersionedMsg = api.createType('XcmVersionedXcm', xcmMessage);
-  const xcmMsg = api.tx.xcmPallet.send(multiLocation, xcmVersionedMsg);
-
-  return api.createType('Call', {
-    callIndex: xcmMsg.callIndex,
-    args: xcmMsg.args,
-  });
+  return api.tx.xcmPallet.send(multiLocation, xcmVersionedMsg);
 }
 
 export function deriveSovereignAccount(paraId: number, type = 'para') {

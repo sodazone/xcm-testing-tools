@@ -21,7 +21,7 @@ export interface XCMMultiLocation {
 	interior: XCMRegistryInteriorMultiLocation;
 }
 
-export interface AssetConfig {
+export type AssetConfig = {
   id: number;
     name: string;
     symbol: string;
@@ -32,13 +32,21 @@ export interface AssetConfig {
     assetMultiLocation: XCMMultiLocation;
 }
 
-export interface NetworkConfig {
+export type NetworkConfig = {
   id: number;
   ws: string;
 }
 
-export interface Config {
+export type HrmpChannelConfig = {
+  sender: number;
+  recipient: number;
+  maxCapacity: number;
+  maxMessageSize: number;
+}
+
+export type Config = {
   networks: NetworkConfig[];
+  channels: HrmpChannelConfig[];
   assets: AssetConfig[];
   xcAssets: AssetConfig[];
 }
