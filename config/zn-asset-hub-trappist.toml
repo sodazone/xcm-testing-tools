@@ -20,7 +20,7 @@ chain = "rococo-local"
 [[parachains]]
 id = 1000
 addToGenesis = true
-chain = "asset-hub-kusama-local"
+chain = "asset-hub-rococo-local"
 cumulus_based = true
 
   [[parachains.collators]]
@@ -47,15 +47,3 @@ chain = "trappist-local"
 number = "u64"
 parent_hash = "Hash"
 post_state = "Hash"
-
-[[hrmp_channels]]
-sender = 1000
-recipient = 2000
-max_capacity = 8
-max_message_size = 512
-
-[[hrmp_channels]]
-sender = 2000
-recipient = 1000
-max_capacity = 8
-max_message_size = 512

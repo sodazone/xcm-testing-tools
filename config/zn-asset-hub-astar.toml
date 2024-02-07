@@ -26,7 +26,7 @@ default_args = [ "--log=xcm=trace,parachain=debug" ]
 
 [[parachains]]
 id = 1000
-chain = "asset-hub-kusama-local"
+chain = "asset-hub-rococo-local"
 cumulus_based = true
 
   [[parachains.collators]]
@@ -56,14 +56,14 @@ cumulus_based = true
   # command = "./bin/astar-collator"
   # args = ["--log=xcm=trace"]
 
-[[hrmp_channels]]
-sender = 1000
-recipient = 2000
-max_capacity = 8
-max_message_size = 512
+# [[hrmp_channels]]
+# sender = 1000
+# recipient = 2000
+# max_capacity = 8
+# max_message_size = 512
 
-[[hrmp_channels]]
-sender = 2000
-recipient = 1000
-max_capacity = 8
-max_message_size = 512
+# [[hrmp_channels]]
+# sender = 2000
+# recipient = 1000
+# max_capacity = 8
+# max_message_size = 512
