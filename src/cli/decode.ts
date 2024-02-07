@@ -1,11 +1,12 @@
 #!/usr/bin/env node
+import '@polkadot/api-augment/polkadot';
 
 import { program } from 'commander';
 
 import { TypeRegistry, Metadata } from '@polkadot/types';
 import staticMetadata from '@polkadot/types-support/metadata/static-polkadot';
 import type { Bytes } from '@polkadot/types';
-import type { VersionedXcm } from '@polkadot/types/interfaces/xcm';
+import type { XcmVersionedXcm } from '@polkadot/types/lookup';
 
 import log from './log.js';
 
@@ -17,7 +18,7 @@ type CliArgs = {
 function asVersionedXcm(
   data: Bytes | Uint8Array,
   registry: TypeRegistry
-): VersionedXcm {
+): XcmVersionedXcm {
   return registry.createType(
     'XcmVersionedXcm', data
   );
@@ -26,9 +27,9 @@ function asVersionedXcm(
 function asXcmpVersionedXcms(
   buffer: Uint8Array,
   registry: TypeRegistry
-) : VersionedXcm[] {
+) : XcmVersionedXcm[] {
   const len = buffer.length;
-  const xcms : VersionedXcm[] = [];
+  const xcms : XcmVersionedXcm[] = [];
   let ptr = 1;
 
   while (ptr < len) {
@@ -49,7 +50,7 @@ function asXcmpVersionedXcms(
 function fromXcmpFormat(
   buf: Uint8Array,
   registry: TypeRegistry
-) : VersionedXcm[] {
+) : XcmVersionedXcm[] {
   switch (buf[0]) {
   case 0x00: { // Concatenated XCM fragments
     return asXcmpVersionedXcms(buf, registry);
