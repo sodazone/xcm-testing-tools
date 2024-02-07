@@ -23,10 +23,18 @@
         {
           "paraID": 1000,
           "symbol": "xcrUSD",
-          "decimals": 6,
+          "decimals": 12,
           "xcmV1MultiLocation":
           "{\"v1\":{\"parents\":1,\"interior\":{\"x3\":[{\"parachain\":1000},{\"palletInstance\":50},{\"generalIndex\":1984}]}}}",
           "asset": "19841984"
+        },
+        {
+          "paraID": 0,
+          "symbol": "xcROC",
+          "decimals": 12,
+          "xcmV1MultiLocation":
+          "{\"v1\":{\"parents\":1,\"interior\":\"Here\"}}",
+          "asset": "1001"
         }
       ]
     }
