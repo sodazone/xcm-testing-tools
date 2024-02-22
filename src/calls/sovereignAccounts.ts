@@ -39,6 +39,7 @@ export async function fundSiblingSovereignAccounts({
 }: CallMultiArgs) {
   // Fund sovereign accounts on sibling chains
   for (const parachain of chains.parachains) {
+    const txs: SubmittableTx[] = [];
     // Transfer funds for every sibling chain sovereign account from ALICE account
     for (const sibling of chains.parachains) {
       if (sibling.id !== parachain.id) {
@@ -46,15 +47,21 @@ export async function fundSiblingSovereignAccounts({
         const address = encodeAddress(key, sibling.ss58Prefix);
         const amount = BigInt(parachain.tokenDecimals ? 2 * (10 ** parachain.tokenDecimals) : 2 * (10 ** 12));
 
-        const nonce = await parachain.incrementGetNonce(signer.address);
-
         log.info(
-          `Transfering ${amount} to fund sibling sovereign account ${address} on parachain ${parachain.name} (nonce:${nonce})`
+          `Transfering ${amount} to fund sibling sovereign account ${address} on parachain ${parachain.name}`
         );
 
-        await parachain.api.tx.balances.transferKeepAlive(address, amount)
-          .signAndSend(signer, { nonce }, txStatusCallback(parachain.api, ack));
+        txs.push(parachain.api.tx.balances.transferKeepAlive(address, amount))
       }
+    }
+
+    const nonce = await parachain.incrementGetNonce(signer.address);
+
+    if (txs.length > 1) {
+      parachain.api.tx.utility.batch(txs)
+        .signAndSend(signer, { nonce }, txStatusCallback(parachain.api, ack));
+    } else {
+      txs[0].signAndSend(signer, { nonce }, txStatusCallback(parachain.api, ack));
     }
   }
 }
