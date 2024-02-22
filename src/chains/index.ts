@@ -58,6 +58,14 @@ export class Chain {
     }
     return this.accountNonce[address];
   }
+
+  isRelaychain() {
+    return this.id === 0;
+  }
+
+  isParachain() {
+    return this.id !== 0;
+  }
 }
 
 export class Chains {
