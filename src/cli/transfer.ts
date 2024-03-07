@@ -8,9 +8,12 @@ import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { AssetTransferApi, constructApiPromise, TxResult, AssetTransferApiOpts } from '@substrate/asset-transfer-api';
 
+import { ApiPromise } from '@polkadot/api';
+import type { SubmittableExtrinsic } from '@polkadot/api/types';
+import type { ISubmittableResult } from '@polkadot/types/types';
+
 import log from './log.js';
 import { txStatusCallback } from '../utils/index.js';
-import { ApiPromise } from '@polkadot/api';
 
 type CliArgs = {
   url: string,
@@ -20,7 +23,8 @@ type CliArgs = {
   assets: string[],
   amounts: string[],
   xcmVersion?: string,
-  assetRegistry?: string
+  assetRegistry?: string,
+  print: boolean
 }
 
 function txCallback(api: ApiPromise) {
@@ -42,7 +46,8 @@ const main = async ({
   assets,
   amounts,
   xcmVersion,
-  assetRegistry
+  assetRegistry,
+  print
 } : CliArgs) => {
   await cryptoWaitReady();
   const keyring = new Keyring({ type: 'sr25519' });
@@ -87,17 +92,29 @@ const main = async ({
     'Call data:',
     JSON.stringify(submittableTxs, null, 2)
   );
+  
+  let finalTx: SubmittableExtrinsic<"promise", ISubmittableResult> | undefined;
 
-  if (submittableTxs.length === 0) {
+  if (submittableTxs.length === 1) {
+    finalTx = submittableTxs[0].tx;
+  } else if (submittableTxs.length > 1) {
+    finalTx = api.tx.utility.batch(
+      submittableTxs.map(s => s.tx)
+    );
+  }
+
+  if (finalTx === undefined) {
     log.info('No submittable extrinsics to send. Exiting.');
     process.exit(0);
-  } else if (submittableTxs.length === 1) {
-    await submittableTxs[0].tx.signAndSend(signer, txCallback(api));
+  }
+
+  if (print) {
+    log.info(`Hex-encoded extrinsic: ${finalTx.toHex()}`);
+    log.info(`Decoded: ${JSON.stringify(finalTx.toHuman(), null, 2)}`);
+    process.exit(0);
   } else {
-    const txs = submittableTxs.map(s => s.tx);
-    const batch = api.tx.utility.batchAll(txs);
-    log.info(`Sending batched transfer: ${batch.toHex()}`);
-    await batch.signAndSend(signer, txCallback(api));
+    log.info(`Sending transfer: ${finalTx.toHex()}`);
+    await finalTx.signAndSend(signer, txCallback(api));
   }
 };
 
@@ -109,8 +126,9 @@ program.name('transfer')
   .requiredOption('-r, --recipients <recipients...>', 'recipient account addresses')
   .requiredOption('-a, --assets <assets...>', 'asset ids')
   .requiredOption('-m, --amounts <amounts...>', 'asset amounts')
-  .option('-x, --xcm-version <xcmVersion>', 'XCM version')
-  .option('--asset-registry <assetRegistryPath>', 'path to injected asset registry')
+  .option('-x, --xcm-version [xcmVersion]', 'XCM version')
+  .option('--asset-registry [assetRegistryPath]', 'path to injected asset registry')
+  .option('-p, --print', 'prints the resulting extrinsic without sending')
   .argument('<url>', 'RPC endpoint URL')
   .addHelpText('after', `
 
