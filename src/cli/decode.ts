@@ -88,7 +88,7 @@ async function main({ data, hrmp } : CliArgs) {
     xcmPrograms.forEach(p => {
       log.info('Message hash:', p.hash.toHex());
       log.info('Instruction:', JSON.stringify(p.toHuman(), null, 2));
-    })
+    });
   } else {
     const xcmProgram = asVersionedXcm(bu, registry);
 
@@ -106,7 +106,7 @@ program.name('decode')
   .addHelpText('after', `
 
   Example call:
-    $ decode --hrmp 0x000310010400010100591f001761f247160a6575a80b0a1300010100591f001761f247160a6575a80b000d01020400010100f2b9740bff0f93715ec5e83f6a27346904558ba33c5e93da03cf9ef75052a952`
+    $ decode --hrmp 0x00031001...5052a952`
   );
 
 program.parse();
