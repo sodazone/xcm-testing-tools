@@ -6,7 +6,7 @@ import { program } from 'commander';
 
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-import { AssetTransferApi, constructApiPromise, TxResult, AssetTransferApiOpts } from '@substrate/asset-transfer-api';
+import { AssetTransferApi, constructApiPromise, TxResult } from '@substrate/asset-transfer-api';
 
 import { ApiPromise } from '@polkadot/api';
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
@@ -38,7 +38,7 @@ function txCallback(api: ApiPromise) {
   });
 }
 
-const main = async ({
+async function main({
   url,
   seed,
   dest,
@@ -48,7 +48,7 @@ const main = async ({
   xcmVersion,
   assetRegistry,
   print
-} : CliArgs) => {
+} : CliArgs) {
   await cryptoWaitReady();
   const keyring = new Keyring({ type: 'sr25519' });
   const signer = keyring.addFromUri(seed);
@@ -57,7 +57,7 @@ const main = async ({
 
   const { api, specName, safeXcmVersion } = await constructApiPromise(url);
 
-  const opts: AssetTransferApiOpts = {};
+  const opts: any = {};
 
   if (assetRegistry) {
     const c = readFileSync(assetRegistry).toString();
@@ -70,30 +70,19 @@ const main = async ({
   const submittableTxs: TxResult<'submittable'>[] = [];
 
   for (const r of recipients) {
-    try {
-      submittableTxs.push(await assetApi.createTransferTransaction(
-        dest,
-        r,
-        assets,
-        amounts,
-        {
-          format: 'submittable',
-          isLimited: true,
-          xcmVersion: xcmVersion ? parseInt(xcmVersion) : safeXcmVersion,
-        }
-      ));
-    } catch (e) {
-      console.error(e);
-      throw Error(e as string);
-    }
+    submittableTxs.push(await assetApi.createTransferTransaction(
+      dest,
+      r,
+      assets,
+      amounts,
+      {
+        format: 'submittable',
+        xcmVersion: xcmVersion ? parseInt(xcmVersion) : safeXcmVersion,
+      }
+    ));
   }
 
-  log.info(
-    'Call data:',
-    JSON.stringify(submittableTxs, null, 2)
-  );
-  
-  let finalTx: SubmittableExtrinsic<"promise", ISubmittableResult> | undefined;
+  let finalTx: SubmittableExtrinsic<'promise', ISubmittableResult> | undefined;
 
   if (submittableTxs.length === 1) {
     finalTx = submittableTxs[0].tx;
@@ -116,7 +105,7 @@ const main = async ({
     log.info(`Sending transfer: ${finalTx.toHex()}`);
     await finalTx.signAndSend(signer, txCallback(api));
   }
-};
+}
 
 program.name('transfer')
   .description('Transfer XCM assets.')
