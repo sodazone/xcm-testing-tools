@@ -1,0 +1,69 @@
+{
+  "rococo": {
+    "1000": {
+      "tokens": [
+        "ROC"
+      ],
+      "assetsInfo": {
+        "1984": "USDT"
+      },
+      "foreignAssetsInfo": {},
+      "poolPairsInfo": {},
+      "specName": "statemine"
+    },
+    "2030": {
+      "tokens": [
+        "BNC"
+      ],
+      "assetsInfo": {},
+      "foreignAssetsInfo": {},
+      "poolPairsInfo": {},
+      "specName": "bifrost-rococo",
+      "xcAssetsData": [
+        {
+          "paraID": 1000,
+          "symbol": "USDT",
+          "decimals": 12,
+          "xcmV1MultiLocation":
+          "{\"v1\":{\"parents\":1,\"interior\":{\"x3\":[{\"parachain\":1000},{\"palletInstance\":50},{\"generalIndex\":1984}]}}}",
+          "asset": "1984"
+        },
+        {
+          "paraID": 0,
+          "symbol": "ROC",
+          "decimals": 12,
+          "xcmV1MultiLocation":
+          "{\"v1\":{\"parents\":1,\"interior\":\"Here\"}}",
+          "asset": "1"
+        }
+      ]
+    },
+    "2034": {
+      "tokens": [
+        "HDX"
+      ],
+      "assetsInfo": {},
+      "foreignAssetsInfo": {},
+      "poolPairsInfo": {},
+      "specName": "hydra-rococo",
+      "xcAssetsData": [
+        {
+          "paraID": 1000,
+          "symbol": "USDT",
+          "decimals": 6,
+          "xcmV1MultiLocation":
+          "{\"v1\":{\"parents\":1,\"interior\":{\"x3\":[{\"parachain\":1000},{\"palletInstance\":50},{\"generalIndex\":1984}]}}}",
+          "asset": "15"
+        },
+        {
+          "paraID": 0,
+          "symbol": "ROC",
+          "decimals": 12,
+          "xcmV1MultiLocation":
+          "{\"v1\":{\"parents\":1,\"interior\":\"Here\"}}",
+          "asset": "5"
+        }
+      ]
+    }
+  }
+}
