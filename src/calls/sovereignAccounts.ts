@@ -51,7 +51,7 @@ export async function fundSiblingSovereignAccounts({
           `Transfering ${amount} to fund sibling sovereign account ${address} on parachain ${parachain.name}`
         );
 
-        txs.push(parachain.api.tx.balances.transferKeepAlive(address, amount))
+        txs.push(parachain.api.tx.balances.transferKeepAlive(address, amount));
       }
     }
 
