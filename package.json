@@ -13,13 +13,14 @@
   },
   "devDependencies": {
     "@substrate/dev": "^0.7.1",
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
-    "eslint": "^8.56.0",
-    "shx": "^0.3.4"
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "eslint": "^8.57.0",
+    "shx": "^0.3.4",
+    "tsx": "^4.7.1"
   },
   "dependencies": {
-    "@substrate/asset-transfer-api": "^0.1.6",
-    "commander": "^11.1.0"
+    "@substrate/asset-transfer-api": "^0.2.0-beta.0",
+    "commander": "^12.0.0"
   }
 }
