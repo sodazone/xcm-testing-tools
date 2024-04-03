@@ -1,9 +1,13 @@
 function error(...msg : any[]) {
-  console.error(...msg);
+  console.error('\x1b[31m', ...msg, '\x1b[0m');
 }
 
 function info(...msg : any[]) {
-  console.log(...msg);
+  console.log('\x1b[32m',...msg, '\x1b[0m');
+}
+
+function warn(...msg : any[]) {
+  console.log('\x1b[33m',...msg, '\x1b[0m');
 }
 
 function ok(...msg : any[]) {
@@ -11,5 +15,5 @@ function ok(...msg : any[]) {
 }
 
 export default {
-  info, ok, error
+  info, ok, error, warn
 };

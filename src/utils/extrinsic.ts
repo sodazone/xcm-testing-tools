@@ -78,6 +78,16 @@ export const txStatusCallback = (api: ApiPromise, ack: AckCallback) => {
       }
 
       await ack(txRes);
+    } else if (status.isInvalid) {
+      log.warn('Extrinsic is invalid');
+      const xterr = getExtrinsicError(api, result);
+      const txRes = new TxResult(xterr);
+
+      if (xterr) {
+        log.error('Extrinsic error:', xterr);
+      }
+
+      await ack(txRes);
     }
   };
 };
