@@ -88,16 +88,19 @@ export type AssetCallArgs = {
   ack: AckCallback
 }
 
-export type AssetCallParaArgs = {
-  parachain: Chain,
-  relaychain: Chain,
-  owner: KeyringPair,
+export type ForceCallArgs = {
+  chain: Chain,
   asset: AssetConfig,
+}
+
+export type MultiChainExtrinsicArgs = {
+  chains: Chains,
+  signer: KeyringPair,
   ack: AckCallback
 }
 
-export type CallMultiArgs = {
-  chains: Chains,
+export type ExtrinsicArgs = {
+  chain: Chain,
   signer: KeyringPair,
   ack: AckCallback
 }

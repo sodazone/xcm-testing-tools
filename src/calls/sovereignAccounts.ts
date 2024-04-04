@@ -3,11 +3,11 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import log from '../cli/log.js';
 
 import { txStatusCallback, deriveSovereignAccount } from '../utils/index.js';
-import { CallMultiArgs, SubmittableTx } from '../types.js';
+import { MultiChainExtrinsicArgs, SubmittableTx } from '../types.js';
 
 export async function fundRelaySovereignAccounts({
   chains, signer, ack
-}: CallMultiArgs) {
+}: MultiChainExtrinsicArgs) {
   const relay = chains.relaychain;
 
   const txs: SubmittableTx[] = [];
@@ -36,7 +36,7 @@ export async function fundRelaySovereignAccounts({
 
 export async function fundSiblingSovereignAccounts({
   chains, signer, ack
-}: CallMultiArgs) {
+}: MultiChainExtrinsicArgs) {
   // Fund sovereign accounts on sibling chains
   for (const parachain of chains.parachains) {
     const txs: SubmittableTx[] = [];

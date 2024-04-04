@@ -1,13 +1,17 @@
+import type { AnyTuple } from '@polkadot/types-codec/types';
+import { GenericCall } from '@polkadot/types';
+
 import log from '../cli/log.js';
 
 import { txStatusCallback, buildXcmTransactCall } from '../utils/index.js';
-import { AssetCallParaArgs, CallMultiArgs, HrmpChannelConfig, SubmittableTx } from '../types.js';
+import { ExtrinsicArgs, MultiChainExtrinsicArgs, HrmpChannelConfig } from '../types.js';
+import { Chain } from '../chains/index.js';
 
 export async function sudoXcmCall(
-  forceCall: SubmittableTx,
-  { parachain, relaychain, owner, ack }: AssetCallParaArgs
+  forceCall: GenericCall<AnyTuple>,
+  parachain: Chain,
+  { chain, signer, ack }: ExtrinsicArgs
 ) {
-  const forceRegisterCall = parachain.api.createType('Call', forceCall);
   const xcmDest = {
     V3: {
       parents: 0,
@@ -18,23 +22,23 @@ export async function sudoXcmCall(
       },
     },
   };
-  const xcmCall = buildXcmTransactCall(relaychain.api, 'Superuser', forceRegisterCall.toHex(), xcmDest);
-  const nonce = await relaychain.incrementGetNonce(owner.address);
+  const xcmCall = buildXcmTransactCall(chain.api, 'Superuser', forceCall.toHex(), xcmDest);
+  const nonce = await chain.incrementGetNonce(signer.address);
 
   log.info(
     `Sending sudo XCM message from relay to ${parachain.name} (nonce:${nonce})`,
   );
 
-  await relaychain.api.tx.sudo.sudo(xcmCall)
+  await chain.api.tx.sudo.sudo(xcmCall)
     .signAndSend(
-      owner,
+      signer,
       { nonce },
-      txStatusCallback(relaychain.api, ack)
+      txStatusCallback(chain.api, ack)
     );
 }
 
 export async function sudoForceOpenHrmpChannel(
-  { chains, signer, ack }: CallMultiArgs,
+  { chains, signer, ack }: MultiChainExtrinsicArgs,
   { sender, recipient, maxCapacity, maxMessageSize }: HrmpChannelConfig
 ) {
   const relaychain = chains.relaychain;
@@ -51,5 +55,16 @@ export async function sudoForceOpenHrmpChannel(
       signer,
       { nonce },
       txStatusCallback(relaychain.api, ack)
+    );
+}
+
+export async function sudoForceDefaultXcmVersion({ chain, signer, ack }: ExtrinsicArgs) {
+  const forceDefaultXcmVersion = chain.api.tx.xcmPallet.forceDefaultXcmVersion(3);
+  const call = chain.api.createType('Call', forceDefaultXcmVersion);
+
+  await chain.api.tx.sudo.sudo(call)
+    .signAndSend(
+      signer,
+      txStatusCallback(chain.api, ack)
     );
 }

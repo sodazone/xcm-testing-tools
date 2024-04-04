@@ -1,6 +1,6 @@
 import log from '../cli/log.js';
 import { txStatusCallback } from '../utils/index.js';
-import { AssetCallArgs, AssetCallParaArgs } from '../types.js';
+import { AssetCallArgs, ExtrinsicArgs, ForceCallArgs } from '../types.js';
 import { sudoXcmCall } from './sudo.js';
 
 /**
@@ -28,43 +28,46 @@ export const createXcAsset = async (
   await batch.signAndSend(owner, { nonce }, txStatusCallback(api, ack));
 };
 
-export async function forceRegisterAssetLocation(args: AssetCallParaArgs) {
-  const { parachain, asset } = args;
-  const forceRegister = parachain.api.tx.xcAssetConfig
+export async function forceRegisterAssetLocation(args: ForceCallArgs, sudoCallArgs: ExtrinsicArgs) {
+  const { chain, asset } = args;
+  const forceRegister = chain.api.tx.xcAssetConfig
     .registerAssetLocation({
       V3: { ...asset.assetMultiLocation }
     }, asset.id);
+  const forceRegisterCall = chain.api.createType('Call', forceRegister);
 
   log.info(
     `Force registering foreign asset [${asset.id} - ${asset.name}] on chain ${asset.location}`
   );
-  await sudoXcmCall(forceRegister, args);
+  await sudoXcmCall(forceRegisterCall, chain, sudoCallArgs);
 }
 
-export async function forceRegisterReserveAsset(args: AssetCallParaArgs) {
-  const { parachain, asset } = args;
-  const forceRegister = parachain.api.tx.assetRegistry
+export async function forceRegisterReserveAsset(args: ForceCallArgs, sudoCallArgs: ExtrinsicArgs) {
+  const { chain, asset } = args;
+  const forceRegister = chain.api.tx.assetRegistry
     .registerReserveAsset(
       asset.id, asset.assetMultiLocation
     );
+  const forceRegisterCall = chain.api.createType('Call', forceRegister);
 
   log.info(
     `Force registering foreign asset [${asset.id} - ${asset.name}] on chain ${asset.location}`
   );
-  await sudoXcmCall(forceRegister, args);
+  await sudoXcmCall(forceRegisterCall, chain, sudoCallArgs);
 }
 
-export async function forceSetAssetsUnitPerSecond(args: AssetCallParaArgs) {
-  const { parachain, asset } = args;
+export async function forceSetAssetsUnitPerSecond(args: ForceCallArgs, sudoCallArgs: ExtrinsicArgs) {
+  const { chain, asset } = args;
 
-  const setUnitsPerSecond = parachain.api.tx.xcAssetConfig
+  const setUnitsPerSecond = chain.api.tx.xcAssetConfig
     .setAssetUnitsPerSecond(
       { V3: asset.assetMultiLocation }, 1
     );
+  const setUnitsCall = chain.api.createType('Call', setUnitsPerSecond);
 
   log.info(
     `Force setting units per second for asset [${asset.id} - ${asset.name}] on chain ${asset.location}`
   );
 
-  await sudoXcmCall(setUnitsPerSecond, args);
+  await sudoXcmCall(setUnitsCall, chain, sudoCallArgs);
 }

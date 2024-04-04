@@ -25,7 +25,7 @@ import log from './log.js';
 
 import { Chains } from '../chains/index.js';
 import { Executor } from '../executor/index.js';
-import { AckCallback, AssetCallArgs, AssetCallParaArgs, AssetConfig, Config } from '../types.js';
+import { AckCallback, AssetCallArgs, ForceCallArgs, AssetConfig, Config, ExtrinsicArgs } from '../types.js';
 
 type CliArgs = {
   configPath: string
@@ -42,15 +42,17 @@ function prepareArgs(
   const callArgs : AssetCallArgs = {
     chain, owner, asset, ack
   };
-  const callParaArgs: AssetCallParaArgs = {
-    relaychain: chains.relaychain,
-    parachain: chain,
-    owner,
-    asset,
+  const forceCallArgs: ForceCallArgs = {
+    chain,
+    asset
+  };
+  const sudoCallArgs: ExtrinsicArgs = {
+    chain: chains.relaychain,
+    signer: owner,
     ack
   };
 
-  return { chain, callArgs, callParaArgs };
+  return { chain, callArgs, forceCallArgs, sudoCallArgs };
 }
 
 async function main({ configPath, seed }: CliArgs) {
@@ -87,12 +89,12 @@ async function main({ configPath, seed }: CliArgs) {
   // Create and mint assets on their native chains
   for (const asset of config.assets) {
     const {
-      chain, callArgs, callParaArgs
+      chain, callArgs, forceCallArgs, sudoCallArgs
     } = prepareArgs(chains, asset, signer, executor.ack);
 
     if (chain.api.tx.assets) {
       executor
-        .push(() => forceCreateAsset(callParaArgs))
+        .push(() => forceCreateAsset(forceCallArgs, sudoCallArgs))
         .push(() => mintAsset(callArgs));
     } else {
       throw new Error('Asset creation pallet not supported');
@@ -102,18 +104,18 @@ async function main({ configPath, seed }: CliArgs) {
   // Register cross-chain assets
   for (const asset of config.xcAssets) {
     const {
-      chain, callArgs, callParaArgs
+      chain, callArgs, forceCallArgs, sudoCallArgs
     } = prepareArgs(chains, asset, signer, executor.ack);
 
-    if (chain.api.tx.assetRegistry) {
+    if (chain.api.tx.assets && chain.api.tx.assetRegistry) {
       executor
         .push(() => createXcAsset(callArgs))
-        .push(() => forceRegisterReserveAsset(callParaArgs));
+        .push(() => forceRegisterReserveAsset(forceCallArgs, sudoCallArgs));
     } else if (chain.api.tx.xcAssetConfig) {
       executor
         .push(() => createXcAsset(callArgs))
-        .push(() => forceRegisterAssetLocation(callParaArgs))
-        .push(() => forceSetAssetsUnitPerSecond(callParaArgs));
+        .push(() => forceRegisterAssetLocation(forceCallArgs, sudoCallArgs))
+        .push(() => forceSetAssetsUnitPerSecond(forceCallArgs, sudoCallArgs));
     } else {
       throw new Error('Asset registration pallet not supported');
     }

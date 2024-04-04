@@ -1,20 +1,21 @@
 import log from '../cli/log.js';
 
 import { txStatusCallback } from '../utils/index.js';
-import { AssetCallArgs, AssetCallParaArgs } from '../types.js';
+import { AssetCallArgs, ExtrinsicArgs, ForceCallArgs } from '../types.js';
 import { sudoXcmCall } from './sudo.js';
 
-export const forceCreateAsset = async (args: AssetCallParaArgs) => {
-  const { asset, parachain, owner } = args;
-  const forceCreate = parachain.api.tx.assets.forceCreate(
-    asset.id, owner.address, asset.isSufficient, asset.minBalance
+export const forceCreateAsset = async (args: ForceCallArgs, sudoTxArgs: ExtrinsicArgs) => {
+  const { asset, chain } = args;
+  const forceCreate = chain.api.tx.assets.forceCreate(
+    asset.id, sudoTxArgs.signer.address, asset.isSufficient, asset.minBalance
   );
+  const forceCreateCall = chain.api.createType('Call', forceCreate);
 
   log.info(
     `Force creating asset ${asset.id} (${asset.symbol}) on chain ${asset.location}`
   );
 
-  await sudoXcmCall(forceCreate, args);
+  await sudoXcmCall(forceCreateCall, chain, sudoTxArgs);
 };
 
 export const mintAsset = async ({

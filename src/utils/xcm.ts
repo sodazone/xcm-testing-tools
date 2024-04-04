@@ -43,7 +43,7 @@ export function buildXcmTransactCall(api: ApiPromise, originKind: string, call: 
     ],
   };
   // VersionedMultiLocation deprecated -> VersionedLocation in XCM v4
-  const multiLocation = api.createType('XcmVersionedLocation', dest) as XcmVersionedLocation;
+  const multiLocation = api.createType('XcmVersionedMultiLocation', dest) as XcmVersionedLocation;
   const xcmVersionedMsg = api.createType('XcmVersionedXcm', xcmMessage);
   return api.tx.xcmPallet.send(multiLocation, xcmVersionedMsg);
 }
