@@ -38,7 +38,7 @@ chain = "trappist-local"
 
   [[parachains.collators]]
   name = "trappist-collator01"
-  command = "./bin/trappist-collator"
+  command = "./bin/trappist-node"
   ws_port = 9920
   p2p_port = 40607
   args = ["--log=xcm=trace,pallet-assets=trace"]
