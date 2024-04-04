@@ -202,9 +202,6 @@ Transaction status: {
 
 The script uses the configuration in `./config/assets.json`, which registers the asset `RUSD` on parachain 1000 and foreign assets `xcRUSD` and `xcROC` on parachain 2000. Extend the configuration to add other assets and chains if needed.
 
-**Note:**
-With more recent Polkadot-SDK runtime releases (>1.5.0), we have noticed that some extrinsics sent to Asset Hub returns status `Invalid` from PolkadotJS. However, querying onchain storage shows that the extrinsic has executed succesfully and storage has been updated. It is not clear at this moment where or why this occurs but it does not impede the script from executing all required extrinsics. It is recommended to watch out for this event in the logs and double-check onchain storage before proceeding.
-
 ### Assets Tranfser 
 
 The transfer script uses [asset-transfer-api](https://github.com/paritytech/asset-transfer-api) to facilitate asset transfer calls.
@@ -254,12 +251,12 @@ watch -n 300 just transfer ws://127.0.0.1:9910 -s //Alice -d 2000 -r 5GrwvaEF5zX
 
 #### Inject Asset Registries
 
-The `asset-transfer-api` contains registries only for well-known relay chains and system parachains (currently only Asset Hub). To use the `asset-transfer-api` for other parachains, inject an asset registry into the API.
+The `asset-transfer-api` contains registries only for well-known relay chains and system parachains. To use the `asset-transfer-api` for other parachains, inject an asset registry into the API.
 
 Example transfer from relaychain to parachain 2000 (Shibuya) with an injected registry:
 
 ```shell
-just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
+just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/local-rococo.json
 ```
 
 #### Testing Batch Transfers
@@ -269,7 +266,7 @@ If an array is passed to the recipients parameter, the transfer script will gene
 Example:
 
 ```shell
-just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 ZAP5o2BjWAo5uoKDE6b6Xkk4Ju7k6bDu24LNjgZbfM3iyiR -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/rococo-assethub-astar.json
+just transfer ws://127.0.0.1:9900 -s //Bob -d 2000 -r ajYMsCKsEAhEvHpeA4XqsfiA9v1CdzZPrCfS6pEfeGHW9j8 ZAP5o2BjWAo5uoKDE6b6Xkk4Ju7k6bDu24LNjgZbfM3iyiR -a 'ROC' -m 3330000000 --asset-registry ./config/asset-registries/local-rococo.json
 ```
 
 ## Decode XCM Message Data
