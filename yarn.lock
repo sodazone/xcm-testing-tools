@@ -5942,7 +5942,6 @@ __metadata:
   bin:
     assets: ./dist/cli/assets.js
     decode: ./dist/cli/decode.js
-    transact: ./dist/cli/transact.js
     transfer: ./dist/cli/transfer.js
   languageName: unknown
   linkType: soft
